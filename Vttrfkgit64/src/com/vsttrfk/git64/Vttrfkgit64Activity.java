@@ -44,7 +44,7 @@ public class Vttrfkgit64Activity extends Activity {
 			try {
 				loadedCard = new VsttrfkCard(mfcDevice);
 			} catch (IOException e) {
-				statusBox.append("tappade anslutning ell3r blev avbruten..\n");
+				statusBox.append("tappade anslutning, blev avbruten, eller misslyckades med auth..\n");
 				return;
 			}
 			statusBox.append("vstfk0rt inläst... Saldo: "
@@ -56,70 +56,33 @@ public class Vttrfkgit64Activity extends Activity {
 	}
 
 	public void writeFileAction(View view) {
-		if (loadedCard != null) {
-			loadedCard.saveToFile();
-			statusBox.append("d0n3!\n");
-		} else {
+		if (loadedCard == null) {
 			statusBox.append("ing3t 1nl43s7 k0r7 -_-\n");
-		}
-	}
-
-	public void authenticate() {
-		if (mfcDevice == null) {
-			throw new RuntimeException("Damn, must resolveIntent.");
-		}
-		for (int i = 0; i < 16; i++) {
-			int j = 0;
-			try {
-				while (!mfcDevice.authenticateSectorWithKeyA(i,
-						VsttrfkCard.KEYS_A[j])) {
-					j++;
-					if (j >= VsttrfkCard.KEYS_A.length) {
-						throw new RuntimeException("Expected VsttrfkCard..");
-					}
-				}
-			} catch (IOException e) {
-				// I/O failure or the operation is canceled
-			}
+		} else {
+			statusBox.append(loadedCard.saveToFile()?
+					"d0n3!\n":"Failed to write f1l3\n");
 		}
 	}
 
 	public void writeNfc(VsttrfkCard card) throws IOException {
 		final byte[][] data = card.getData();
-		// authenticate();
-		// for (int i = 63; i < data.length; i++) {
-		// mfcDevice.writeBlock(i, data[i]);
-		// statusBox.append("sector " + i + " success\n");
-		// }
 		if (!mfcDevice.isConnected()) {
 			mfcDevice.connect();
 		}
 		for (int i = 0; i < data.length; i++) {
-			System.out.println("block:" + i + "\t sector:" + i / 4);
-
 			// every 4th block is a new sector... try to auth..
-			if (i % 4 == 0) {
-				boolean authed = false;
-				int j = i / 4 < 3 ? 0 : 1; // first three always the first key.
-											// skip this if at sector 3.
-				while (!authed) {
-					authed = mfcDevice.authenticateSectorWithKeyB(i / 4,
-							VsttrfkCard.KEYS_B[j++]);
-					Log.e("info", "authed to sector :" + i / 4 + ":" + authed);
-					if (j > VsttrfkCard.KEYS_B.length) {
-						// no a key worked..
-						throw new IOException(
-								"This is n0 v4lid vstrfkcrad..n0 w0rk1ng k3y :/");
-					}
-				}
+			if (i % 4 == 0 && !VsttrfkCard.authSector(mfcDevice, i/4)) {
+				statusBox.append("Unable to auth to sect0r: "+i+".\n");
 			}
 			if (i % 4 != 3) {
+				boolean success = true;
 				try {
 					mfcDevice.writeBlock(i, data[i]);
 				} catch (IOException e) {
-					Log.d("VARNING", "Skrev inte till block:" + i);
+					success = false;
 				}
-				statusBox.append("wr0t3 t0 bl0ck " + i + "!!!!\n");
+				statusBox.append((success?"wr0t3 t0 bl0ck ":"Ph41l3d to pwn block: ")
+						+ i + "!\n");
 			} 
 		}
 	}

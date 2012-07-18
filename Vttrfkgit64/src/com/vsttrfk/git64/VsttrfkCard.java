@@ -27,22 +27,14 @@ public class VsttrfkCard {
 	 * @param mfc
 	 */
 	public VsttrfkCard(MifareClassic mfc) throws TagLostException, IOException {
-		mfc.connect();
-		Log.e("InFO", ""+mfc.getSize());
+		if(!mfc.isConnected()){
+			mfc.connect();
+		}
 		for (int i = 0 ;  i < data.length; i++){
 			
 			// every 4th block is a new sector... try to auth..
-			if ( i % 4 == 0){
-				boolean authed = false;
-				int j = i/4 < 3 ? 0 : 1; // first three always the first key. skip this if at sector 3.
-				while (!authed){
-					authed = mfc.authenticateSectorWithKeyA(i/4, KEYS_A[j++]);
-					if( j > KEYS_A.length){ 
-						// no a key worked..
-						Log.e("ERRORRORORORO", "GICK INTE ATTTTTT AUTHAA");
-						throw new IOException("This is n0 v4lid vstrfkcrad.. :/");
-					}
-				}
+			if ( i % 4 == 0 && !authSector(mfc, i/4)){
+				throw new IOException("Unable to auth to sector :"+i/4+".");
 			}
 			
 			data[i] = mfc.readBlock(i);
@@ -70,9 +62,9 @@ public class VsttrfkCard {
 	 * Save to file to use later
 	 * @return
 	 */
-	public void saveToFile(){
+	public boolean saveToFile(){
 	
-		Util.writeBytesToFile(Util.matrixToArray(data));
+		return Util.writeBytesToFile(Util.matrixToArray(data));
 		
 	}
 
@@ -86,6 +78,22 @@ public class VsttrfkCard {
 				Util.byteToInt(new byte[]{data[i+1][5],data[i+1][4]},0) : 
 				Util.byteToInt(new byte[]{data[i+2][5],data[i+2][4]},0);
 		return value/25.0;
+	}
+
+	public static boolean authSector(MifareClassic mfcDevice, int sector) throws IOException{
+
+		boolean authed = false;
+		int j = sector / 4 < 3 ? 0 : 1; // first three always the first key.
+									    // skip this if at sector 3.
+		while (!authed) {
+			authed = mfcDevice.authenticateSectorWithKeyB(sector, KEYS_B[j++]);
+			Log.d("AUTH", "authed to sector :" + sector + ":" + authed);
+			if (j > KEYS_B.length) {
+				// no a key worked..
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	

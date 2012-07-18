@@ -34,8 +34,10 @@ public abstract class Util {
 		} catch (FileNotFoundException e1) {
 			System.out.println("FILE " + binDump.getAbsolutePath()
 					+ " NOT FOUND");
+			return null;
 		} catch (IOException e2) {
 			System.out.println("ERROR HANDLING FILE " + binDump.getName());
+			return null;
 
 		}
 
@@ -56,13 +58,12 @@ public abstract class Util {
 		return result;
 	}
 
-	public static void writeBytesToFile(byte[] data) {
+	public static boolean writeBytesToFile(byte[] data) {
 		String uid = "";
-
 		for (int i = 0; i < 5; i++) {
-			uid += Integer.toHexString(data[i]).substring(0, 1);
+			uid += Integer.toHexString(data[i]).substring(0, 2).toUpperCase();
 		}
-		final File outputFile = new File(uid+"-"+Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+
+		final File outputFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+uid+"-"+
 				new SimpleDateFormat("yyMMddHHmmss").format(Calendar
 						.getInstance().getTime()) + ".mfd");
 		try {
@@ -73,9 +74,12 @@ public abstract class Util {
 		} catch (FileNotFoundException e1) {
 			System.out.println("ERROR: " + outputFile.getAbsolutePath()
 					+ " not found");
+			return false;
 		} catch (IOException e2) {
 			System.out.println("Couldn't write data to file");
+			return false;
 		}
+		return true;
 	}
 
 	public static int byteToInt(byte[] bytes, int offset) {
