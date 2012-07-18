@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, Vttrfkgit64Activity!</string>
+    <string name="app_name">Vttrfkgit64</string>
+    <string name="StepOneFil">Fil</string>
+    <string name="StepOneNfc">NFC</string>
+    <string name="StepTwoFil">Fil</string>
+    <string name="StepTwoNfc">NFC</string>
+    <string name="Läs">Läs från:</string>
+    <string name="Skriv">Skriv till:</string>
+    <string name="statusBox"></string>
+
+</resources>
