@@ -75,6 +75,8 @@
         android:id="@+id/statusBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxLines="100"
+        android:scrollbars="vertical"
         android:text="@string/statusBox" />
 
 </LinearLayout>
