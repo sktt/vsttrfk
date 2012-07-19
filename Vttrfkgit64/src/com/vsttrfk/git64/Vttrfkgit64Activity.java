@@ -33,8 +33,14 @@ public class Vttrfkgit64Activity extends Activity {
 
 	}
 
+	@Override
+	public void onNewIntent(Intent intent){
+		getCardFromReader(intent);
+	}
+	
 	private MifareClassic getCardFromReader(Intent intent) {
 		MifareClassic result = null;
+		
 		if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
 			result = MifareClassic.get((Tag) intent
 					.getParcelableExtra(NfcAdapter.EXTRA_TAG));
@@ -118,5 +124,6 @@ public class Vttrfkgit64Activity extends Activity {
 				+ loadedCard.getBalance() + "\nNu kan du skriva till nfc!\n");
 
 	}
+
 
 }
