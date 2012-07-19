@@ -75,7 +75,7 @@ public class Vttrfkgit64Activity extends Activity {
 		}
 		for (int i = 0; i < data.length; i++) {
 			// every 4th block is a new sector... try to auth..
-			if (i % 4 == 0 && !VsttrfkCard.authSector(mfcDevice, i/4, 1)) {
+			if (i % 4 == 0 && !VsttrfkCard.authSectorB(mfcDevice, i/4)) {
 				statusBox.append("Unable to auth to sect0r: "+i+".\n");
 			}
 			if (i % 4 != 3) {

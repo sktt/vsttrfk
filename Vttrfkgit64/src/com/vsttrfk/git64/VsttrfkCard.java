@@ -32,7 +32,7 @@ public class VsttrfkCard {
 		for (int i = 0 ;  i < data.length; i++){
 			
 			// every 4th block is a new sector... try to auth..
-			if ( i % 4 == 0 && !authSector(mfc, i/4, 0)){
+			if ( i % 4 == 0 && !authSectorA(mfc, i/4)){
 				throw new IOException("Unable to auth to sector :"+i/4+".");
 			}
 			
@@ -79,18 +79,12 @@ public class VsttrfkCard {
 		return value/25.0;
 	}
 
-	public static boolean authSector(MifareClassic mfcDevice, int sector, int readWrite) throws IOException{
-		byte[][] keys;
-		if (readWrite==0){
-			keys = KEYS_A;
-		} else {
-			keys = KEYS_B;
-		}
+	public static boolean authSectorB(MifareClassic mfcDevice, int sector) throws IOException{
 		// first three always the first key.
 		int j = sector / 4 < 3 ? 0 : 1; 
 		// skip this if at sector 3.
-		while (!mfcDevice.authenticateSectorWithKeyB(sector, keys[j++])) {
-			if (j > keys.length) {
+		while (!mfcDevice.authenticateSectorWithKeyB(sector, KEYS_B[j++])) {
+			if (j >= KEYS_B.length) {
 				// no a key worked..
 				return false;
 			}
@@ -98,7 +92,16 @@ public class VsttrfkCard {
 		return true;
 	}
 	
-	
-	
-	
+	public static boolean authSectorA(MifareClassic mfcDevice, int sector) throws IOException{
+		// first three always the first key.
+		int j = sector / 4 < 3 ? 0 : 1; 
+		// skip this if at sector 3.
+		while (!mfcDevice.authenticateSectorWithKeyB(sector, KEYS_B[j++])) {
+			if (j >= KEYS_B.length) {
+				// no a key worked..
+				return false;
+			}
+		}
+		return true;
+	}
 }
