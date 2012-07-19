@@ -8,6 +8,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -17,7 +18,6 @@ public class Vttrfkgit64Activity extends Activity {
 	private TextView statusBox;
 	private VsttrfkCard loadedCard;
 
-	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -25,6 +25,8 @@ public class Vttrfkgit64Activity extends Activity {
 
 		setContentView(R.layout.main); // print some haxor ascii.. *important*
 		statusBox = (TextView) findViewById(R.id.statusBox);
+		statusBox.setMovementMethod(new ScrollingMovementMethod());
+
 	}
 
 	private MifareClassic getCardFromReader(Intent intent) {
@@ -33,7 +35,8 @@ public class Vttrfkgit64Activity extends Activity {
 			result = MifareClassic.get((Tag) intent
 					.getParcelableExtra(NfcAdapter.EXTRA_TAG));
 		} else {
-			Log.e("ERROR", "Unknown: " + intent + "\nAction: " + intent.getAction());
+			Log.e("ERROR",
+					"Unknown: " + intent + "\nAction: " + intent.getAction());
 		}
 		return result;
 	}
@@ -44,7 +47,8 @@ public class Vttrfkgit64Activity extends Activity {
 			try {
 				loadedCard = new VsttrfkCard(mfcDevice);
 			} catch (IOException e) {
-				statusBox.append("tappade anslutning, blev avbruten, eller misslyckades med auth..\n");
+				statusBox
+						.append("tappade anslutning, blev avbruten, eller misslyckades med auth..\n");
 				return;
 			}
 			statusBox.append("vstfk0rt inläst... Saldo: "
@@ -59,8 +63,8 @@ public class Vttrfkgit64Activity extends Activity {
 		if (loadedCard == null) {
 			statusBox.append("ing3t 1nl43s7 k0r7 -_-\n");
 		} else {
-			statusBox.append(loadedCard.saveToFile()?
-					"d0n3!\n":"Failed to write f1l3\n");
+			statusBox.append(loadedCard.saveToFile() ? "d0n3!\n"
+					: "Failed to write f1l3\n");
 		}
 	}
 
@@ -71,8 +75,8 @@ public class Vttrfkgit64Activity extends Activity {
 		}
 		for (int i = 0; i < data.length; i++) {
 			// every 4th block is a new sector... try to auth..
-			if (i % 4 == 0 && !VsttrfkCard.authSector(mfcDevice, i/4)) {
-				statusBox.append("Unable to auth to sect0r: "+i+".\n");
+			if (i % 4 == 0 && !VsttrfkCard.authSector(mfcDevice, i / 4)) {
+				statusBox.append("Unable to auth to sect0r: " + i + ".\n");
 			}
 			if (i % 4 != 3) {
 				boolean success = true;
@@ -81,9 +85,9 @@ public class Vttrfkgit64Activity extends Activity {
 				} catch (IOException e) {
 					success = false;
 				}
-				statusBox.append((success?"wr0t3 t0 bl0ck ":"Ph41l3d to pwn block: ")
-						+ i + "!\n");
-			} 
+				statusBox.append((success ? "wr0t3 t0 bl0ck "
+						: "Ph41l3d to pwn block: ") + i + "!\n");
+			}
 		}
 	}
 
@@ -101,4 +105,9 @@ public class Vttrfkgit64Activity extends Activity {
 
 		}
 	}
+
+	public void writeNfcFromFile() {
+
+	}
+
 }
