@@ -97,6 +97,8 @@ public class Vttrfkgit64Activity extends Activity {
 
 	public void writeNfcAction(View view) {
 		if (loadedCard != null) {
+
+			mfcDevice = getCardFromReader(getIntent());
 			try {
 				writeNfc(this.loadedCard);
 			} catch (IOException e) {
