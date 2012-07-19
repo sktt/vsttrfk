@@ -17,7 +17,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/StepOneNfc"
-        andoird:onClick="readNfcAction" />
+        android:onClick="readNfcAction" />
 
     <Button
         android:id="@+id/button2"

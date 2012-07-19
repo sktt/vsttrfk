@@ -28,7 +28,7 @@ public class Vttrfkgit64Activity extends Activity {
 
 		setContentView(R.layout.design2); // print some haxor ascii.. *important*
 		statusBox = (TextView) findViewById(R.id.statusBox);
-		filePathEditText = (EditText) findViewById(R.id.editText1);
+		filePathEditText = (EditText) findViewById(R.id.filePath);
 		statusBox.setMovementMethod(new ScrollingMovementMethod());
 
 	}
