@@ -96,7 +96,7 @@ public class VsttrfkCard {
 		// first three always the first key.
 		int j = sector / 4 < 3 ? 0 : 1; 
 		// skip this if at sector 3.
-		while (!mfcDevice.authenticateSectorWithKeyB(sector, KEYS_A[j++])) {
+		while (!mfcDevice.authenticateSectorWithKeyA(sector, KEYS_A[j++])) {
 			if (j >= KEYS_A.length) {
 				// no a key worked..
 				return false;
