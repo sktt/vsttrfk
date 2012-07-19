@@ -16,16 +16,18 @@
         android:id="@+id/button1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/StepOneNfc" />
+        android:text="@string/StepOneNfc"
+        andoird:onClick="readNfcAction" />
 
     <Button
         android:id="@+id/button2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/StepOneFil" />
-
+        android:text="@string/StepOneFil"
+        android:onClick="readFileAction" />
+
     <EditText
-        android:id="@+id/editText1"
+        android:id="@+id/filePath"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -47,21 +49,23 @@
             android:layout_gravity="center_horizontal"
             android:text="@string/Skriv"
             android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/writeNfc"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/StepTwoNfc" />
-
+            android:text="@string/StepTwoNfc"
+            android:onClick="writeNfcAction" />
+
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/writeFile"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/StepTwoFil" />
+            android:text="@string/StepTwoFil"
+            android:onClick="writeFileAction" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/statusBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/statusBox" />

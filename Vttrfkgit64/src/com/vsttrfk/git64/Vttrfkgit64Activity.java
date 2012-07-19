@@ -8,23 +8,27 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class Vttrfkgit64Activity extends Activity {
 	private MifareClassic mfcDevice;
 	private TextView statusBox;
 	private VsttrfkCard loadedCard;
-
+	private EditText filePathEditText;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.main); // print some haxor ascii.. *important*
+		setContentView(R.layout.design2); // print some haxor ascii.. *important*
 		statusBox = (TextView) findViewById(R.id.statusBox);
+		filePathEditText = (EditText) findViewById(R.id.editText1);
 		statusBox.setMovementMethod(new ScrollingMovementMethod());
 
 	}
@@ -41,7 +45,7 @@ public class Vttrfkgit64Activity extends Activity {
 		return result;
 	}
 
-	public void readAction(View view) {
+	public void readNfcAction(View view) {
 		mfcDevice = getCardFromReader(getIntent());
 		if (mfcDevice != null) {
 			try {
@@ -106,7 +110,10 @@ public class Vttrfkgit64Activity extends Activity {
 		}
 	}
 
-	public void writeNfcFromFile() {
+	public void readFileAction(View view) {
+		loadedCard = new VsttrfkCard(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filePathEditText.getText());
+		statusBox.append("vstfk0rt inläst... Saldo: "
+				+ loadedCard.getBalance() + "\nNu kan du skriva till nfc!\n");
 
 	}
 
