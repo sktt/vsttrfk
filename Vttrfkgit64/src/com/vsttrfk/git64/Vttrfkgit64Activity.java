@@ -32,11 +32,6 @@ public class Vttrfkgit64Activity extends Activity {
 		statusBox.setMovementMethod(new ScrollingMovementMethod());
 
 	}
-
-	@Override
-	public void onNewIntent(Intent intent){
-		getCardFromReader(intent);
-	}
 	
 	private MifareClassic getCardFromReader(Intent intent) {
 		MifareClassic result = null;
@@ -58,7 +53,7 @@ public class Vttrfkgit64Activity extends Activity {
 				loadedCard = new VsttrfkCard(mfcDevice);
 			} catch (IOException e) {
 				statusBox
-						.append("tappade anslutning, blev avbruten, eller misslyckades med auth..\n");
+						.append("Fel vid läsning: \n"+e.getMessage());
 				return;
 			}
 			statusBox.append("vstfk0rt inläst... Saldo: "
@@ -83,9 +78,11 @@ public class Vttrfkgit64Activity extends Activity {
 		if (!mfcDevice.isConnected()) {
 			mfcDevice.connect();
 		}
-		for (int i = 0; i < data.length; i++) {
+		IVsttrfkAuthable writeAuth = new WriteAuth(mfcDevice);
+		//first 4 blocks are manufacturer's read-only
+		for (int i = 4; i < data.length; i++) {
 			// every 4th block is a new sector... try to auth..
-			if (i % 4 == 0 && !VsttrfkCard.authSectorB(mfcDevice, i/4)) {
+			if (i % 4 == 0 && !writeAuth.authToSector(i/4)) {
 				statusBox.append("Unable to auth to sect0r: "+i+".\n");
 			}
 			if (i % 4 != 3) {
@@ -108,8 +105,7 @@ public class Vttrfkgit64Activity extends Activity {
 			try {
 				writeNfc(this.loadedCard);
 			} catch (IOException e) {
-				statusBox.append("Something went wrong....sry\n");
-				e.printStackTrace();
+				statusBox.append("Error connecting\n");
 			}
 			statusBox.append("d0n3\n");
 		} else {
@@ -119,7 +115,8 @@ public class Vttrfkgit64Activity extends Activity {
 	}
 
 	public void readFileAction(View view) {
-		loadedCard = new VsttrfkCard(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filePathEditText.getText());
+		loadedCard = new VsttrfkCard(Environment.getExternalStorageDirectory().
+				getAbsolutePath()+"/"+filePathEditText.getText());
 		statusBox.append("vstfk0rt inläst... Saldo: "
 				+ loadedCard.getBalance() + "\nNu kan du skriva till nfc!\n");
 
