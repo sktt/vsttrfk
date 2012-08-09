@@ -63,8 +63,12 @@ public abstract class Util {
 		for (int i = 0; i < 5; i++) {
 			uid += Integer.toHexString(data[i]).substring(0, 2).toUpperCase();
 		}
-		final File outputFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+uid+"-"+
-				new SimpleDateFormat("yyMMddHHmmss").format(Calendar
+		final File outputFile = new File(Environment
+				.getExternalStorageDirectory().getAbsolutePath()
+				+ "/"
+				+ uid
+				+ "-"
+				+ new SimpleDateFormat("yyMMddHHmmss").format(Calendar
 						.getInstance().getTime()) + ".mfd");
 		try {
 			OutputStream outputStream = new FileOutputStream(outputFile);
@@ -91,4 +95,15 @@ public abstract class Util {
 		return ret;
 	}
 
+	public static String trimByte(String hexString) {
+
+		if (hexString.length() > 2) {
+			hexString = hexString.substring(6);
+		}
+		if (hexString.length() == 1) {
+			hexString = "0" + hexString;
+		}
+
+		return hexString;
+	}
 }

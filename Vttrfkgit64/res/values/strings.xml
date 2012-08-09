@@ -11,5 +11,6 @@
     <string name="Skriv">Skriv till:</string>
     <string name="statusBox"></string>
     <string name="fileName">Ange filnamn: </string>
+    <string name="anonExp">Returenera</string>
 
 </resources>

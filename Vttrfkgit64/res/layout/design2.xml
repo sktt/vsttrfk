@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/textView1"
@@ -16,23 +16,23 @@
         android:id="@+id/button1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/StepOneNfc"
-        android:onClick="readNfcAction" />
+        android:onClick="readNfcAction"
+        android:text="@string/StepOneNfc" />
 
     <Button
         android:id="@+id/button2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/StepOneFil"
-        android:onClick="readFileAction" />
+        android:onClick="readFileAction"
+        android:text="@string/StepOneFil" />
 
     <EditText
         android:id="@+id/filePath"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textUri"
-        android:text="@string/fileName" >
+        android:hint="@string/fileName"
+        android:inputType="textUri">
 
         <requestFocus />
     </EditText>
@@ -49,26 +49,41 @@
             android:layout_gravity="center_horizontal"
             android:text="@string/Skriv"
             android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
         <Button
             android:id="@+id/writeNfc"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/StepTwoNfc"
-            android:onClick="writeNfcAction" />
-
+            android:onClick="writeNfcAction"
+            android:text="@string/StepTwoNfc" />
+
         <Button
             android:id="@+id/writeFile"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/StepTwoFil"
-            android:onClick="writeFileAction" />
+            android:onClick="writeFileAction"
+            android:text="@string/StepTwoFil" />
 
-        <TextView
-            android:id="@+id/statusBox"
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/anonExploit"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/statusBox" />
+            android:onClick="anonymousExploitAction"
+            android:text="@string/anonExp" />
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+             >
+
+            <TextView
+                android:id="@+id/statusBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/statusBox"
+                android:focusableInTouchMode="true" />
+        </ScrollView>
     </LinearLayout>
 
 </LinearLayout>

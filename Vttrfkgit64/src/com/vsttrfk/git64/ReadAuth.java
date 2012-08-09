@@ -7,7 +7,7 @@ import android.nfc.tech.MifareClassic;
 public class ReadAuth implements IVsttrfkAuthable {
 
 	private MifareClassic mfcDevice;
-	
+
 	public MifareClassic getMfcDevice() {
 		return mfcDevice;
 	}
@@ -16,16 +16,21 @@ public class ReadAuth implements IVsttrfkAuthable {
 		int i = 0;
 		boolean success = true;
 		try {
-			while(i < KEYS_A.length && !mfcDevice.authenticateSectorWithKeyA(sector, KEYS_A[i++])){
+			while (i < KEYS_A.length) {
+				if (mfcDevice.authenticateSectorWithKeyA(sector, KEYS_A[i++])) {
+					success = true;
+					break;
+				}
+
 				success = false;
 			}
-		} catch(IOException e){
+		} catch (IOException e) {
 			success = false;
 		}
 		return success;
 	}
- 
-	public ReadAuth(MifareClassic mfcDevice){
+
+	public ReadAuth(MifareClassic mfcDevice) {
 		this.mfcDevice = mfcDevice;
 	}
 

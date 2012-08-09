@@ -7,7 +7,7 @@ import android.nfc.tech.MifareClassic;
 public class WriteAuth implements IVsttrfkAuthable {
 
 	private MifareClassic mfcDevice;
-	
+
 	public MifareClassic getMfcDevice() {
 		return mfcDevice;
 	}
@@ -16,16 +16,21 @@ public class WriteAuth implements IVsttrfkAuthable {
 		int i = 0;
 		boolean success = true;
 		try {
-			while(i < KEYS_B.length && !mfcDevice.authenticateSectorWithKeyB(sector, KEYS_B[i++])){
+			while (i < KEYS_B.length) {
+				if (mfcDevice.authenticateSectorWithKeyB(sector, KEYS_B[i++])) {
+					success = true;
+					break;
+				}
+
 				success = false;
 			}
-		} catch(IOException e){
+		} catch (IOException e) {
 			success = false;
 		}
 		return success;
 	}
-	
-	public WriteAuth(MifareClassic mfcDevice){
+
+	public WriteAuth(MifareClassic mfcDevice) {
 		this.mfcDevice = mfcDevice;
 	}
 }
