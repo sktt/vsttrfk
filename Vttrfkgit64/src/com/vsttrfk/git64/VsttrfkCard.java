@@ -75,8 +75,7 @@ public class VsttrfkCard {
 
 	public boolean anonymousExploit() {
 		final int i = getBlock(BlockId.PURSE);
-		
-		
+
 		if (Util.trimByte(Integer.toHexString(data[8][3])).charAt(1) == '8'
 				&& data[i + 1][0] > data[i + 2][0]) {
 			return false;
@@ -111,16 +110,17 @@ public class VsttrfkCard {
 		balanceBlock2 = Util.trimByte(balanceBlock2);
 
 		if (blockSelect.charAt(1) == '8') {
-			value = Util.byteToInt(new byte[] { data[i + 2][5],
-							data[i + 2][4] }, 0);
+			value = Util.byteToInt(
+					new byte[] { data[i + 2][5], data[i + 2][4] }, 0);
 			if (balanceBlock2.charAt(0) == '7') {
-				value= value - 0xFFFF; 
+				value = value - 0xFFFF;
 
 			}
 		} else if (blockSelect.charAt(1) == '4') {
-			value = Util.byteToInt(new byte[] { data[i + 1][5], data[i + 1][4] }, 0);
+			value = Util.byteToInt(
+					new byte[] { data[i + 1][5], data[i + 1][4] }, 0);
 			if (balanceBlock1.charAt(0) == '7') {
-				value= value - 0xFFFF; 
+				value = value - 0xFFFF;
 			}
 		}
 		return value / 25.0;

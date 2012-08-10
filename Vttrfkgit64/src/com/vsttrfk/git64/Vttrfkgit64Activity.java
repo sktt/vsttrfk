@@ -1,5 +1,6 @@
 package com.vsttrfk.git64;
 
+import java.io.File;
 import java.io.IOException;
 
 import android.app.Activity;
@@ -100,27 +101,53 @@ public class Vttrfkgit64Activity extends Activity {
 	}
 
 	public void writeNfcAction(View view) {
-		if (loadedCard != null) {
+		if (mfcDevice != null) {
+			if (loadedCard != null) {
 
-			mfcDevice = getCardFromReader(getIntent());
-			try {
-				writeNfc(this.loadedCard);
-			} catch (IOException e) {
-				statusBox.append("Error connecting\n");
+				mfcDevice = getCardFromReader(getIntent());
+				try {
+					writeNfc(this.loadedCard);
+				} catch (IOException e) {
+					statusBox.append("Error connecting\n");
+				}
+				statusBox.append("d0n3\n");
+			} else {
+				statusBox.append("ing3t 1nl43s7 k0r7 -_-\n");
+
 			}
-			statusBox.append("d0n3\n");
 		} else {
-			statusBox.append("ing3t 1nl43s7 k0r7 -_-\n");
+			statusBox.append("yue put cardz on m3 first plx\n");
 
 		}
 	}
 
 	public void readFileAction(View view) {
-		loadedCard = new VsttrfkCard(Environment.getExternalStorageDirectory()
-				.getAbsolutePath() + "/" + filePathEditText.getText());
-		statusBox.append("vstfk0rt inläst... Saldo: " + loadedCard.getBalance()
-				+ "\nNu kan du skriva till nfc!\n");
 
+		if (filePathEditText.getText().length() > 0) {
+
+			File file = new File(Environment.getExternalStorageDirectory()
+					.getAbsolutePath(), "" + filePathEditText.getText());
+
+			if (file.exists()) {
+
+				loadedCard = new VsttrfkCard(Environment
+						.getExternalStorageDirectory().getAbsolutePath()
+						+ "/"
+						+ filePathEditText.getText());
+
+				statusBox.append("vstfk0rt inläst... Saldo: "
+						+ loadedCard.getBalance()
+						+ "\nNu kan du skriva till nfc!\n");
+
+			} else {
+				statusBox.append("Filen hittas inte.\n");
+
+			}
+		} else {
+
+			statusBox.append("Ange filnamn.\n");
+
+		}
 	}
 
 	public void anonymousExploitAction(View view) throws TagLostException,
@@ -145,7 +172,9 @@ public class Vttrfkgit64Activity extends Activity {
 			writeNfc(loadedCard);
 
 			statusBox.append("Saldo innan: " + saldo + "\n");
+
 			saldo = loadedCard.getBalance();
+
 			statusBox.append("Saldo efter: " + saldo + "\n");
 
 		} else {
