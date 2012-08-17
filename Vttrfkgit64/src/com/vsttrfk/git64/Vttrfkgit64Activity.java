@@ -1,5 +1,6 @@
 package com.vsttrfk.git64;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import android.app.Activity;
@@ -77,25 +78,30 @@ public class Vttrfkgit64Activity extends Activity {
 
 	public void writeNfc(VsttrfkCard card) throws IOException {
 		final byte[][] data = card.getData();
-		if (!mfcDevice.isConnected()) {
-			mfcDevice.connect();
-		}
-		IVsttrfkAuthable writeAuth = new WriteAuth(mfcDevice);
-		// first 4 blocks are manufacturer's read-only
-		for (int i = 4; i < data.length; i++) {
-			// every 4th block is a new sector... try to auth..
-			if (i % 4 == 0 && !writeAuth.authToSector(i / 4)) {
-				statusBox.append("Unable to auth to sect0r: " + i + ".\n");
+		if(mfcDevice != null){
+			// compare cards first...
+			if (!mfcDevice.isConnected()) {
+				mfcDevice.connect();
 			}
-			if (i % 4 != 3) {
-				boolean success = true;
-				try {
-					mfcDevice.writeBlock(i, data[i]);
-				} catch (IOException e) {
-					success = false;
+			
+			IVsttrfkAuthable writeAuth = new WriteAuth(mfcDevice);
+			// first 4 blocks are manufacturer's read-only
+			for (int i = 4; i < data.length; i++) {
+				// every 4th block is a new sector... try to auth..
+				if (i % 4 == 0 && !writeAuth.authToSector(i / 4)) {
+					statusBox.append("Unable to auth to sect0r: " + i + ".\n");
 				}
-
+				if (i % 4 != 3) {
+					try {
+						mfcDevice.writeBlock(i, data[i]);
+					} catch (IOException e) {
+						statusBox.append("Failed to write to block: " + i + " !! ");
+					}
+	
+				}
 			}
+		} else {
+			statusBox.append("Inget kort att skriva på");
 		}
 	}
 
@@ -116,8 +122,19 @@ public class Vttrfkgit64Activity extends Activity {
 	}
 
 	public void readFileAction(View view) {
-		loadedCard = new VsttrfkCard(Environment.getExternalStorageDirectory()
-				.getAbsolutePath() + "/" + filePathEditText.getText());
+		String binDump = Environment.getExternalStorageDirectory()
+				.getAbsolutePath() + "/" + filePathEditText.getText();
+		try {
+			loadedCard = new VsttrfkCard(binDump);
+
+		} catch (FileNotFoundException e1) {
+			statusBox.append("FILE " + binDump + " NOT FOUND\n");
+			return;
+		} catch (IOException e2) {
+			statusBox.append("ERROR HANDLING FILE " + binDump + "\n");
+			return;
+		}
+		
 		statusBox.append("vstfk0rt inläst... Saldo: " + loadedCard.getBalance()
 				+ "\nNu kan du skriva till nfc!\n");
 

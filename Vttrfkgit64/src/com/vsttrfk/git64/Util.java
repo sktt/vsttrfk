@@ -15,31 +15,20 @@ import android.nfc.tech.MifareClassic;
 import android.os.Environment;
 
 public abstract class Util {
-	public static byte[] getBytesFromFile(File binDump) {
+	public static byte[] getBytesFromFile(File binDump) throws FileNotFoundException, IOException{
 		byte[] fileData = new byte[MifareClassic.SIZE_1K];
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try {
-			InputStream inputStream = new FileInputStream(binDump);
+		InputStream inputStream = new FileInputStream(binDump);
 
-			DataOutputStream dos = new DataOutputStream(baos);
-			int count = inputStream.read(fileData);
-			while (count != -1) {
-				dos.write(fileData, 0, count);
-				count = inputStream.read(fileData);
-			}
-			inputStream.close();
-			dos.close();
-			baos.close();
-
-		} catch (FileNotFoundException e1) {
-			System.out.println("FILE " + binDump.getAbsolutePath()
-					+ " NOT FOUND");
-			return null;
-		} catch (IOException e2) {
-			System.out.println("ERROR HANDLING FILE " + binDump.getName());
-			return null;
-
+		DataOutputStream dos = new DataOutputStream(baos);
+		int count = inputStream.read(fileData);
+		while (count != -1) {
+			dos.write(fileData, 0, count);
+			count = inputStream.read(fileData);
 		}
+		inputStream.close();
+		dos.close();
+		baos.close();
 
 		return baos.toByteArray();
 	}
@@ -61,7 +50,7 @@ public abstract class Util {
 	public static boolean writeBytesToFile(byte[] data) {
 		String uid = "";
 		for (int i = 0; i < 5; i++) {
-			uid += Integer.toHexString(data[i]).substring(0, 2).toUpperCase();
+			uid += Util.toHexString(data[i]).toUpperCase();
 		}
 		final File outputFile = new File(Environment
 				.getExternalStorageDirectory().getAbsolutePath()
@@ -95,15 +84,16 @@ public abstract class Util {
 		return ret;
 	}
 
-	public static String trimByte(String hexString) {
-
-		if (hexString.length() > 2) {
-			hexString = hexString.substring(6);
+	public static String toHexString(int i){
+		String result = Integer.toHexString(i);
+		
+		
+		if (i < 0) {
+			result= result.substring(6);
 		}
-		if (hexString.length() == 1) {
-			hexString = "0" + hexString;
+		if (i >= 0 && i < 10) {
+			result= "0" + result;
 		}
-
-		return hexString;
+		return result;
 	}
 }

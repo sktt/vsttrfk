@@ -1,10 +1,12 @@
 package com.vsttrfk.git64;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import android.nfc.TagLostException;
 import android.nfc.tech.MifareClassic;
+import android.util.Log;
 
 public class VsttrfkCard {
 
@@ -48,9 +50,14 @@ public class VsttrfkCard {
 	 * Create card object a saved dump
 	 * 
 	 * @param path
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
 	 */
-	public VsttrfkCard(String path) {
+	public VsttrfkCard(String path) throws FileNotFoundException, IOException{
 		final File binDump = new File(path);
+		if(!binDump.exists()){
+			Log.e("IO Error", "File: "+ binDump.getAbsolutePath() + " does not exsist!!");
+		}
 		final byte[] bytes = Util.getBytesFromFile(binDump);
 		// split into blocks. it actually makes sense
 		for (int i = 0; i < MifareClassic.SIZE_1K; i++) {
@@ -77,9 +84,9 @@ public class VsttrfkCard {
 		final int i = getBlock(BlockId.PURSE);
 		
 		
-		if (Util.trimByte(Integer.toHexString(data[8][3])).charAt(1) == '8'
+		if (Util.toHexString(data[8][3]).charAt(1) == '8'
 				&& data[i + 1][0] > data[i + 2][0]) {
-			return false;
+			return false; // Card was already sploitet.
 		}
 
 		// switch places with the two balance blocks.
@@ -102,25 +109,21 @@ public class VsttrfkCard {
 	public double getBalance() {
 		final int i = getBlock(BlockId.PURSE);
 		int value = 0;
-		String blockSelect = Integer.toHexString(data[8][3]);
-		String balanceBlock1 = Integer.toHexString(data[i + 1][6]);
-		String balanceBlock2 = Integer.toHexString(data[i + 2][6]);
-
-		blockSelect = Util.trimByte(blockSelect);
-		balanceBlock1 = Util.trimByte(balanceBlock1);
-		balanceBlock2 = Util.trimByte(balanceBlock2);
+		String blockSelect = Util.toHexString(data[8][3]);
+		String balanceBlock1 = Util.toHexString(data[i + 1][6]);
+		String balanceBlock2 = Util.toHexString(data[i + 2][6]);
 
 		if (blockSelect.charAt(1) == '8') {
-			value = Util.byteToInt(new byte[] { data[i + 2][5],
-							data[i + 2][4] }, 0);
+			value = Util.byteToInt(new byte[] { data[i + 2][5], data[i + 2][4] }, 0);
 			if (balanceBlock2.charAt(0) == '7') {
-				value= value - 0xFFFF; 
-
+				value -= 0xFFFF; 
 			}
-		} else if (blockSelect.charAt(1) == '4') {
+		}
+		
+		if (blockSelect.charAt(1) == '4') {
 			value = Util.byteToInt(new byte[] { data[i + 1][5], data[i + 1][4] }, 0);
 			if (balanceBlock1.charAt(0) == '7') {
-				value= value - 0xFFFF; 
+				value -= 0xFFFF; 
 			}
 		}
 		return value / 25.0;
