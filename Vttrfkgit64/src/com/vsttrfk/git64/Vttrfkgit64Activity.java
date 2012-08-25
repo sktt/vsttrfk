@@ -15,6 +15,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class Vttrfkgit64Activity extends Activity {
@@ -22,7 +23,7 @@ public class Vttrfkgit64Activity extends Activity {
 	private TextView statusBox;
 	private VsttrfkCard loadedCard;
 	private EditText filePathEditText;
-
+	private ScrollView scroll;
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -33,10 +34,25 @@ public class Vttrfkgit64Activity extends Activity {
 		statusBox = (TextView) findViewById(R.id.statusBox);
 		statusBox.requestFocus();
 		filePathEditText = (EditText) findViewById(R.id.filePath);
+		scroll = (ScrollView) findViewById(R.id.scrollView);
 		statusBox.setMovementMethod(new ScrollingMovementMethod());
+		statusBox.append(" ,.-+*^'´AHc/Breach pr0d `'^*+-.,\n");
+		printDumps();
 
+		update();
 	}
-
+	private void update(){
+		scroll.fullScroll(scroll.FOCUS_DOWN);
+	}
+	private void printDumps(){
+		String[] stuff = Environment.getExternalStorageDirectory().list();
+		if (stuff.length > 0 ) {
+			statusBox.append("Sparade dumpar:\n");
+			for(int i = 0; i < stuff.length; i++){
+				statusBox.append(stuff[i].endsWith(".mfd") ? stuff[i] +"\n" : "");
+			}
+		}
+	}
 	private MifareClassic getCardFromReader(Intent intent) {
 		MifareClassic result = null;
 
@@ -59,32 +75,35 @@ public class Vttrfkgit64Activity extends Activity {
 				statusBox.append("Fel vid läsning: \n" + e.getMessage());
 				return;
 			}
-			statusBox.append("vstfk0rt inläst... Saldo: "
-					+ loadedCard.getBalance() + "\n");
+			statusBox.append(getCardInfo(loadedCard));
 
 		} else {
 			statusBox.append("yue put cardz on m3 first plx\n");
 		}
+		update();
 	}
+	
 
 	public void writeFileAction(View view) {
 		if (loadedCard == null) {
 			statusBox.append("ing3t 1nl43s7 k0r7 -_-\n");
 		} else {
-			statusBox.append(loadedCard.saveToFile() ? "d0n3!\n"
+			statusBox.append(Util.writeCardToFile(loadedCard) ? "d0n3!\n"
 					: "Failed to write f1l3\n");
 		}
+		
+		update();
 	}
 
 	public void writeNfc(VsttrfkCard card) throws IOException {
 		final byte[][] data = card.getData();
 		if(mfcDevice != null){
-			// compare cards first...
+			
 			if (!mfcDevice.isConnected()) {
 				mfcDevice.connect();
 			}
-			
-			IVsttrfkAuthable writeAuth = new WriteAuth(mfcDevice);
+
+			final IVsttrfkAuthable writeAuth = new WriteAuth(mfcDevice);
 			// first 4 blocks are manufacturer's read-only
 			for (int i = 4; i < data.length; i++) {
 				// every 4th block is a new sector... try to auth..
@@ -97,7 +116,6 @@ public class Vttrfkgit64Activity extends Activity {
 					} catch (IOException e) {
 						statusBox.append("Failed to write to block: " + i + " !! ");
 					}
-	
 				}
 			}
 		} else {
@@ -106,40 +124,55 @@ public class Vttrfkgit64Activity extends Activity {
 	}
 
 	public void writeNfcAction(View view) {
-		if (loadedCard != null) {
-
-			mfcDevice = getCardFromReader(getIntent());
+		mfcDevice = getCardFromReader(getIntent());
+		if (mfcDevice != null &&
+				loadedCard != null &&
+				Util.arrayEqual(mfcDevice.getTag().getId(), loadedCard.getId())){
 			try {
-				writeNfc(this.loadedCard);
+				writeNfc(loadedCard);
 			} catch (IOException e) {
 				statusBox.append("Error connecting\n");
 			}
 			statusBox.append("d0n3\n");
 		} else {
-			statusBox.append("ing3t 1nl43s7 k0r7 -_-\n");
-
+			statusBox.append("Either no card on reader, nothing to write, or id missmatch... :P\n");
 		}
+		update();
 	}
 
 	public void readFileAction(View view) {
-		String binDump = Environment.getExternalStorageDirectory()
-				.getAbsolutePath() + "/" + filePathEditText.getText();
-		try {
-			loadedCard = new VsttrfkCard(binDump);
-
-		} catch (FileNotFoundException e1) {
-			statusBox.append("FILE " + binDump + " NOT FOUND\n");
-			return;
-		} catch (IOException e2) {
-			statusBox.append("ERROR HANDLING FILE " + binDump + "\n");
-			return;
+		if (filePathEditText.getText().length() > 0) {
+			String binDump = Environment.getExternalStorageDirectory()
+					.getAbsolutePath() + "/" + filePathEditText.getText();
+			try {
+				loadedCard = new VsttrfkCard(binDump);
+	
+			} catch (FileNotFoundException e1) {
+				statusBox.append("FILE " + binDump + " NOT FOUND\n");
+				return;
+			} catch (IOException e2) {
+				statusBox.append("ERROR HANDLING FILE " + binDump + "\n");
+				return;
+			}
+			
+			statusBox.append(getCardInfo(loadedCard)
+					+ "\nNu kan du skriva till nfc!\n");
+	
+		} else {
+			statusBox.append("Ange filnamn.\n");
 		}
-		
-		statusBox.append("vstfk0rt inläst... Saldo: " + loadedCard.getBalance()
-				+ "\nNu kan du skriva till nfc!\n");
-
+		update();
 	}
 
+	private String getCardInfo(VsttrfkCard card){
+		byte[] id = card.getId();
+		String strId = "";
+		for(int i = 0 ; i < id.length; i++){
+			strId += Util.toHexString(id[i]);
+		}
+		return "\n1n14357 k0r7\n----------\nID: \t"+strId+"\nBalance: \t"+card.getBalance()+"\n"	;
+		
+	}
 	public void anonymousExploitAction(View view) throws TagLostException,
 			IOException {
 
@@ -162,12 +195,14 @@ public class Vttrfkgit64Activity extends Activity {
 			writeNfc(loadedCard);
 
 			statusBox.append("Saldo innan: " + saldo + "\n");
+
 			saldo = loadedCard.getBalance();
+
 			statusBox.append("Saldo efter: " + saldo + "\n");
 
 		} else {
 			statusBox.append("yue put cardz on m3 first plx\n");
 		}
+		update();
 	}
-
 }

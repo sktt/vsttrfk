@@ -2,7 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical" >
+
+    <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
 
     <TextView
         android:id="@+id/textView1"
@@ -19,71 +23,86 @@
         android:onClick="readNfcAction"
         android:text="@string/StepOneNfc" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:onClick="readFileAction"
-        android:text="@string/StepOneFil" />
-
-    <EditText
-        android:id="@+id/filePath"
+    <GridLayout
+        android:id="@+id/file"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/fileName"
-        android:inputType="textUri">
+        android:columnCount="2"
+        android:orientation="horizontal"
+        android:rowCount="1" >
 
-        <requestFocus />
-    </EditText>
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="85dp"
+            android:layout_gravity="left"
+            android:onClick="readFileAction"
+            android:text="@string/StepOneFil" />
 
-    <LinearLayout
+        <AutoCompleteTextView
+            android:id="@+id/filePath"
+            android:layout_gravity="fill_horizontal"
+            android:ems="10"
+            android:hint="@string/fileName"
+            android:inputType="textUri"
+            android:nextFocusLeft="@id/filePath"
+            android:nextFocusUp="@id/filePath" >
+
+            <requestFocus />
+        </AutoCompleteTextView>
+    </GridLayout>
+
+    <TextView
+        android:id="@+id/textView2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/Skriv"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/Skriv"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+    <GridLayout
+        android:id="@+id/write"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:orientation="horizontal" >
 
         <Button
             android:id="@+id/writeNfc"
-            android:layout_width="fill_parent"
+            android:layout_width="124dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|fill_horizontal"
             android:onClick="writeNfcAction"
             android:text="@string/StepTwoNfc" />
 
         <Button
             android:id="@+id/writeFile"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="writeFileAction"
             android:text="@string/StepTwoFil" />
 
         <Button
             android:id="@+id/anonExploit"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="anonymousExploitAction"
             android:text="@string/anonExp" />
-
-        <ScrollView
-            android:id="@+id/scrollView"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-             >
+    </GridLayout>
 
-            <TextView
-                android:id="@+id/statusBox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/statusBox"
-                android:focusableInTouchMode="true" />
-        </ScrollView>
-    </LinearLayout>
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:id="@+id/statusBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
+            android:text="@string/statusBox"
+            android:textSize="@dimen/sSize"
+            android:typeface="monospace" />
+
+    </ScrollView>
 
 </LinearLayout>

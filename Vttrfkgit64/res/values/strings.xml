@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, Vttrfkgit64Activity!</string>
-    <string name="app_name">Vttrfkgit64</string>
+    <string name="app_name">NFC Backup</string>
     <string name="StepOneFil">Fil</string>
     <string name="StepOneNfc">NFC</string>
     <string name="StepTwoFil">Fil</string>

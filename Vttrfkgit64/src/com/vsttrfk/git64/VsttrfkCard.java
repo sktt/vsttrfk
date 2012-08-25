@@ -69,21 +69,18 @@ public class VsttrfkCard {
 		return data;
 	}
 
-	/**
-	 * Save to file to use later
-	 * 
-	 * @return
-	 */
-	public boolean saveToFile() {
-
-		return Util.writeBytesToFile(Util.matrixToArray(data));
-
+	public byte[] getId(){
+		byte[] result = new byte[5];
+		
+		for(int i = 0; i < 5; i++){
+			result[i] = data[0][i];
+		}
+		
+		return result;
 	}
 
 	public boolean anonymousExploit() {
 		final int i = getBlock(BlockId.PURSE);
-		
-		
 		if (Util.toHexString(data[8][3]).charAt(1) == '8'
 				&& data[i + 1][0] > data[i + 2][0]) {
 			return false; // Card was already sploitet.

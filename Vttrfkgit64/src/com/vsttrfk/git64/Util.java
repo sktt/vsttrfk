@@ -9,8 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import android.nfc.tech.MifareClassic;
 import android.os.Environment;
 
@@ -47,18 +45,25 @@ public abstract class Util {
 		return result;
 	}
 
-	public static boolean writeBytesToFile(byte[] data) {
+	public static boolean writeCardToFile(VsttrfkCard card) {
+		final byte[] data = matrixToArray(card.getData());
 		String uid = "";
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 2; i++) { // 5 is full id.
 			uid += Util.toHexString(data[i]).toUpperCase();
 		}
-		final File outputFile = new File(Environment
+		
+		int copy = 0;
+		File outputFile = new File(".");
+		do{
+		outputFile = new File(Environment
 				.getExternalStorageDirectory().getAbsolutePath()
 				+ "/"
 				+ uid
-				+ "-"
-				+ new SimpleDateFormat("yyMMddHHmmss").format(Calendar
-						.getInstance().getTime()) + ".mfd");
+				+ "-"+(int)card.getBalance()+"kr"+(copy != 0 ? "-"+copy : "")+ ".mfd");
+//				+ new SimpleDateFormat("yyMMddHHmmss").format(Calendar
+//						.getInstance().getTime()) + ".mfd");
+		copy++;
+		} while (outputFile.exists());
 		try {
 			OutputStream outputStream = new FileOutputStream(outputFile);
 			outputStream.write(data);
@@ -95,5 +100,17 @@ public abstract class Util {
 			result= "0" + result;
 		}
 		return result;
+	}
+
+	public static boolean arrayEqual(byte[] id, byte[] id2) {
+		if(id.length == id2.length){
+			for(int i = 0 ; i < id.length; i++){
+				if(id[i] != id2[i]){
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 }
