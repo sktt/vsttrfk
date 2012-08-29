@@ -92,7 +92,8 @@
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="0dip"
+        android:layout_weight="0.18" >
 
         <TextView
             android:id="@+id/statusBox"
@@ -102,7 +103,16 @@
             android:text="@string/statusBox"
             android:textSize="@dimen/sSize"
             android:typeface="monospace" />
-
     </ScrollView>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal"
+        android:text="@string/credz"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:typeface="monospace" />
 
 </LinearLayout>

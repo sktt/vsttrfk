@@ -86,7 +86,7 @@ public class VsttrfkCard {
 			return false; // Card was already sploitet.
 		}
 
-		// switch places with the two balance blocks.
+		// switch places between the two balance blocks.
 		final byte[] temp = data[i + 1];
 		data[i + 1] = data[i + 2];
 		data[i + 2] = temp;
@@ -106,9 +106,9 @@ public class VsttrfkCard {
 	public double getBalance() {
 		final int i = getBlock(BlockId.PURSE);
 		int value = 0;
-		String blockSelect = Util.toHexString(data[8][3]);
-		String balanceBlock1 = Util.toHexString(data[i + 1][6]);
-		String balanceBlock2 = Util.toHexString(data[i + 2][6]);
+		final String blockSelect = Util.toHexString(data[8][3]);
+		final String balanceBlock1 = Util.toHexString(data[i + 1][6]);
+		final String balanceBlock2 = Util.toHexString(data[i + 2][6]);
 
 		if (blockSelect.charAt(1) == '8') {
 			value = Util.byteToInt(new byte[] { data[i + 2][5], data[i + 2][4] }, 0);

@@ -2,6 +2,8 @@ package com.vsttrfk.git64;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -36,20 +38,30 @@ public class Vttrfkgit64Activity extends Activity {
 		filePathEditText = (EditText) findViewById(R.id.filePath);
 		scroll = (ScrollView) findViewById(R.id.scrollView);
 		statusBox.setMovementMethod(new ScrollingMovementMethod());
-		statusBox.append(" ,.-+*^'´AHc/Breach pr0d `'^*+-.,\n");
-		printDumps();
+		printDumps(getDumpList());
 
 		update();
 	}
 	private void update(){
-		scroll.fullScroll(scroll.FOCUS_DOWN);
+		scroll.fullScroll(View.FOCUS_DOWN);
 	}
-	private void printDumps(){
+	private List<String> getDumpList(){
+		List<String> dumps = new ArrayList<String>();
 		String[] stuff = Environment.getExternalStorageDirectory().list();
-		if (stuff.length > 0 ) {
-			statusBox.append("Sparade dumpar:\n");
-			for(int i = 0; i < stuff.length; i++){
-				statusBox.append(stuff[i].endsWith(".mfd") ? stuff[i] +"\n" : "");
+		for(int i = 0; i < stuff.length; i++){
+			if(stuff[i].endsWith(".mfd")){
+				dumps.add(stuff[i]);
+			}
+		}
+		return dumps;
+	}
+	private void printDumps(List<String> dumps){
+		if(dumps.isEmpty()){
+			statusBox.append("Läs in kort och skriv ut till fil\n");
+		} else {
+			statusBox.append("Sparade vsttrfkKort: \n");
+			for(int i = 0 ; i < dumps.size(); i ++){
+				statusBox.append(i+") "+dumps.get(i)+"\n");
 			}
 		}
 	}
@@ -69,6 +81,8 @@ public class Vttrfkgit64Activity extends Activity {
 	public void readNfcAction(View view) {
 		mfcDevice = getCardFromReader(getIntent());
 		if (mfcDevice != null) {
+
+			statusBox.append("Läser k0rt...\n");
 			try {
 				loadedCard = new VsttrfkCard(mfcDevice);
 			} catch (IOException e) {
@@ -98,7 +112,6 @@ public class Vttrfkgit64Activity extends Activity {
 	public void writeNfc(VsttrfkCard card) throws IOException {
 		final byte[][] data = card.getData();
 		if(mfcDevice != null){
-			
 			if (!mfcDevice.isConnected()) {
 				mfcDevice.connect();
 			}
@@ -110,7 +123,7 @@ public class Vttrfkgit64Activity extends Activity {
 				if (i % 4 == 0 && !writeAuth.authToSector(i / 4)) {
 					statusBox.append("Unable to auth to sect0r: " + i + ".\n");
 				}
-				if (i % 4 != 3) {
+				if (i % 4 != 3) { // blcok 3 (fjärde blocket) håller i keys, vill ej skriva hit
 					try {
 						mfcDevice.writeBlock(i, data[i]);
 					} catch (IOException e) {
@@ -128,6 +141,8 @@ public class Vttrfkgit64Activity extends Activity {
 		if (mfcDevice != null &&
 				loadedCard != null &&
 				Util.arrayEqual(mfcDevice.getTag().getId(), loadedCard.getId())){
+
+			statusBox.append("Skr1v3r...\n"); 
 			try {
 				writeNfc(loadedCard);
 			} catch (IOException e) {
@@ -140,10 +155,25 @@ public class Vttrfkgit64Activity extends Activity {
 		update();
 	}
 
+	private boolean isInt(String text){
+			for(int i = 0 ; i < text.length(); i++){
+				if(!Character.isDigit(text.charAt(i))){
+					return false;
+				}
+			}
+		return true;
+	}
 	public void readFileAction(View view) {
-		if (filePathEditText.getText().length() > 0) {
+		List<String> dumpList = getDumpList();
+		final String inputText = ""+filePathEditText.getText();
+		if (inputText.length() > 0) {
 			String binDump = Environment.getExternalStorageDirectory()
-					.getAbsolutePath() + "/" + filePathEditText.getText();
+					.getAbsolutePath() + "/";
+			if (isInt(inputText)){
+				binDump += dumpList.get(Integer.parseInt(inputText));
+			} else {
+				binDump += inputText;	
+			}
 			try {
 				loadedCard = new VsttrfkCard(binDump);
 	
