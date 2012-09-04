@@ -155,7 +155,7 @@ public class Vttrfkgit64Activity extends Activity {
 		update();
 	}
 
-	private boolean isInt(String text){
+	private static boolean isInt(String text){
 			for(int i = 0 ; i < text.length(); i++){
 				if(!Character.isDigit(text.charAt(i))){
 					return false;
@@ -194,7 +194,7 @@ public class Vttrfkgit64Activity extends Activity {
 		update();
 	}
 
-	private String getCardInfo(VsttrfkCard card){
+	private static String getCardInfo(VsttrfkCard card){
 		byte[] id = card.getId();
 		String strId = "";
 		for(int i = 0 ; i < id.length; i++){
@@ -208,6 +208,9 @@ public class Vttrfkgit64Activity extends Activity {
 
 		mfcDevice = getCardFromReader(getIntent());
 		if (mfcDevice != null) {
+			if (!mfcDevice.isConnected()) {
+				mfcDevice.connect();
+			}
 			try {
 				loadedCard = new VsttrfkCard(mfcDevice);
 
