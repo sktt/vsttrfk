@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.TagLostException;
@@ -26,6 +28,9 @@ public class Vttrfkgit64Activity extends Activity {
 	private VsttrfkCard loadedCard;
 	private EditText filePathEditText;
 	private ScrollView scroll;
+	private NfcAdapter mAdapter;
+	private IntentFilter[] filters;
+	private PendingIntent pIntent ;
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,9 +44,43 @@ public class Vttrfkgit64Activity extends Activity {
 		scroll = (ScrollView) findViewById(R.id.scrollView);
 		statusBox.setMovementMethod(new ScrollingMovementMethod());
 		printDumps(getDumpList());
-
+		
+		
+		
+		mAdapter = NfcAdapter.getDefaultAdapter(this);
+		pIntent = PendingIntent.getActivity(this, 0, 
+				new Intent(this, 
+						getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+		IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        filters = new IntentFilter[] { tagDetected };
+        
 		update();
 	}
+	
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mAdapter.enableForegroundDispatch(this, pIntent, filters, null); 
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mAdapter.disableForegroundDispatch(this);
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+			mfcDevice = MifareClassic.get((Tag) intent
+					.getParcelableExtra(NfcAdapter.EXTRA_TAG));
+		} else {
+			Log.e("ERROR",
+					"Unknown: " + intent + "\nAction: " + intent.getAction());
+		}
+	}
+	
 	private void update(){
 		scroll.fullScroll(View.FOCUS_DOWN);
 	}
@@ -65,21 +104,8 @@ public class Vttrfkgit64Activity extends Activity {
 			}
 		}
 	}
-	private MifareClassic getCardFromReader(Intent intent) {
-		MifareClassic result = null;
-
-		if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
-			result = MifareClassic.get((Tag) intent
-					.getParcelableExtra(NfcAdapter.EXTRA_TAG));
-		} else {
-			Log.e("ERROR",
-					"Unknown: " + intent + "\nAction: " + intent.getAction());
-		}
-		return result;
-	}
 
 	public void readNfcAction(View view) {
-		mfcDevice = getCardFromReader(getIntent());
 		if (mfcDevice != null) {
 
 			statusBox.append("Läser k0rt...\n");
@@ -113,7 +139,11 @@ public class Vttrfkgit64Activity extends Activity {
 		final byte[][] data = card.getData();
 		if(mfcDevice != null){
 			if (!mfcDevice.isConnected()) {
-				mfcDevice.connect();
+				try{
+					mfcDevice.connect();
+				} catch(IllegalStateException e){
+					throw new TagLostException("lost connection");
+				}
 			}
 
 			final IVsttrfkAuthable writeAuth = new WriteAuth(mfcDevice);
@@ -137,12 +167,10 @@ public class Vttrfkgit64Activity extends Activity {
 	}
 
 	public void writeNfcAction(View view) {
-		mfcDevice = getCardFromReader(getIntent());
+		statusBox.append("commencing...\n"); 
 		if (mfcDevice != null &&
 				loadedCard != null &&
 				Util.arrayEqual(mfcDevice.getTag().getId(), loadedCard.getId())){
-
-			statusBox.append("Skr1v3r...\n"); 
 			try {
 				writeNfc(loadedCard);
 			} catch (IOException e) {
@@ -155,21 +183,13 @@ public class Vttrfkgit64Activity extends Activity {
 		update();
 	}
 
-	private static boolean isInt(String text){
-			for(int i = 0 ; i < text.length(); i++){
-				if(!Character.isDigit(text.charAt(i))){
-					return false;
-				}
-			}
-		return true;
-	}
 	public void readFileAction(View view) {
 		List<String> dumpList = getDumpList();
 		final String inputText = ""+filePathEditText.getText();
 		if (inputText.length() > 0) {
 			String binDump = Environment.getExternalStorageDirectory()
 					.getAbsolutePath() + "/";
-			if (isInt(inputText)){
+			if (Util.isInt(inputText)){
 				binDump += dumpList.get(Integer.parseInt(inputText));
 			} else {
 				binDump += inputText;	
@@ -200,13 +220,13 @@ public class Vttrfkgit64Activity extends Activity {
 		for(int i = 0 ; i < id.length; i++){
 			strId += Util.toHexString(id[i]);
 		}
-		return "\n1n14357 k0r7\n----------\nID: \t"+strId+"\nBalance: \t"+card.getBalance()+"\n"	;
+		return "\n1n14357 k0r7\n----------\nID: \t"+strId+"\nBalance: \t"+card.getBalance()
+				+"kr\nAnonymousReturn ger:"+card.getOldBalance()	+"kr\n";
 		
 	}
 	public void anonymousExploitAction(View view) throws TagLostException,
 			IOException {
 
-		mfcDevice = getCardFromReader(getIntent());
 		if (mfcDevice != null) {
 			if (!mfcDevice.isConnected()) {
 				mfcDevice.connect();

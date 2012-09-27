@@ -11,7 +11,8 @@ import android.util.Log;
 public class VsttrfkCard {
 
 	private static enum BlockId {
-		PURSE((byte) 0x85);
+		PURSE((byte) 0x85),
+		LOG((byte) 0xA3);
 
 		private byte id;
 
@@ -30,7 +31,11 @@ public class VsttrfkCard {
 	 */
 	public VsttrfkCard(MifareClassic mfc) throws TagLostException, IOException {
 		if (!mfc.isConnected()) {
-			mfc.connect();
+			try{
+				mfc.connect();
+			} catch(IllegalStateException e){
+				throw new TagLostException("card was removed");
+			}
 		}
 		IVsttrfkAuthable readAuth = new ReadAuth(mfc);
 		for (int i = 0; i < data.length; i++) {
@@ -70,12 +75,11 @@ public class VsttrfkCard {
 	}
 
 	public byte[] getId(){
-		byte[] result = new byte[5];
+		byte[] result = new byte[4];
 		
-		for(int i = 0; i < 5; i++){
+		for(int i = 0; i < 4; i++){
 			result[i] = data[0][i];
 		}
-		
 		return result;
 	}
 
@@ -103,26 +107,36 @@ public class VsttrfkCard {
 		return i;
 	}
 
-	public double getBalance() {
+	private int getBalanceBlock(){
 		final int i = getBlock(BlockId.PURSE);
-		int value = 0;
 		final String blockSelect = Util.toHexString(data[8][3]);
-		final String balanceBlock1 = Util.toHexString(data[i + 1][6]);
-		final String balanceBlock2 = Util.toHexString(data[i + 2][6]);
-
+		int result = 0 ;
 		if (blockSelect.charAt(1) == '8') {
-			value = Util.byteToInt(new byte[] { data[i + 2][5], data[i + 2][4] }, 0);
-			if (balanceBlock2.charAt(0) == '7') {
-				value -= 0xFFFF; 
-			}
+			result = i + 2;
 		}
-		
 		if (blockSelect.charAt(1) == '4') {
-			value = Util.byteToInt(new byte[] { data[i + 1][5], data[i + 1][4] }, 0);
-			if (balanceBlock1.charAt(0) == '7') {
-				value -= 0xFFFF; 
-			}
+			result = i + 1;
+		}
+
+		return result;
+	}
+	private double getBalanceFromBlock(byte[] balanceBlock){
+		final String balancePosNeg = Util.toHexString(balanceBlock[6]);
+		int value = 0;
+		value = Util.byteToInt(new byte[] { balanceBlock[5], balanceBlock[4] }, 0);
+		if (balancePosNeg.charAt(0) == '7') {
+			value -= 0xFFFF; 
 		}
 		return value / 25.0;
+	}
+	
+	public double getOldBalance() {
+		int bBlock = getBalanceBlock();
+		int purseStart = getBlock(BlockId.PURSE);
+		return getBalanceFromBlock(data[purseStart+1+(bBlock-purseStart)%2]);	
+	}
+	
+	public double getBalance() {
+		return getBalanceFromBlock(data[getBalanceBlock()]);
 	}
 }

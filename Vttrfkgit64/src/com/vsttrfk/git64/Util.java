@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import android.nfc.tech.MifareClassic;
 import android.os.Environment;
 
@@ -112,5 +113,14 @@ public abstract class Util {
 			return true;
 		}
 		return false;
+	}
+
+	public static boolean isInt(String text){
+			for(int i = 0 ; i < text.length(); i++){
+				if(!Character.isDigit(text.charAt(i))){
+					return false;
+				}
+			}
+		return true;
 	}
 }
