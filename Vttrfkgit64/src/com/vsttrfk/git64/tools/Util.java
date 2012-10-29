@@ -1,4 +1,4 @@
-package com.vsttrfk.git64;
+package com.vsttrfk.git64.tools;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -46,8 +46,8 @@ public abstract class Util {
 		return result;
 	}
 
-	public static boolean writeCardToFile(VsttrfkCard card) {
-		final byte[] data = matrixToArray(card.getData());
+	public static boolean writeCardToFile(byte[][] cardData, double cardBalance) {
+		final byte[] data = matrixToArray(cardData);
 		String uid = "";
 		for (int i = 0; i < 2; i++) { // 5 is full id.
 			uid += Util.toHexString(data[i]).toUpperCase();
@@ -60,9 +60,7 @@ public abstract class Util {
 				.getExternalStorageDirectory().getAbsolutePath()
 				+ "/"
 				+ uid
-				+ "-"+(int)card.getBalance()+"kr"+(copy != 0 ? "-"+copy : "")+ ".mfd");
-//				+ new SimpleDateFormat("yyMMddHHmmss").format(Calendar
-//						.getInstance().getTime()) + ".mfd");
+				+ "-"+(int)cardBalance+"kr"+(copy != 0 ? "-"+copy : "")+ ".mfd");
 		copy++;
 		} while (outputFile.exists());
 		try {

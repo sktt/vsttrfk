@@ -22,10 +22,16 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class Vttrfkgit64Activity extends Activity {
+import com.vsttrfk.git64.auth.IRKFAuthable;
+import com.vsttrfk.git64.auth.WriteAuth;
+import com.vsttrfk.git64.cards.RKFCard;
+import com.vsttrfk.git64.cards.RKFCardFactory;
+import com.vsttrfk.git64.tools.Util;
+
+public class RKFsploitActivity extends Activity {
 	private MifareClassic mfcDevice;
 	private TextView statusBox;
-	private VsttrfkCard loadedCard;
+	private RKFCard loadedCard;
 	private EditText filePathEditText;
 	private ScrollView scroll;
 	private NfcAdapter mAdapter;
@@ -107,10 +113,10 @@ public class Vttrfkgit64Activity extends Activity {
 
 	public void readNfcAction(View view) {
 		if (mfcDevice != null) {
-
+			
 			statusBox.append("Läser k0rt...\n");
 			try {
-				loadedCard = new VsttrfkCard(mfcDevice);
+				loadedCard = RKFCardFactory.createCard(mfcDevice);
 			} catch (IOException e) {
 				statusBox.append("Fel vid läsning: \n" + e.getMessage());
 				return;
@@ -128,14 +134,14 @@ public class Vttrfkgit64Activity extends Activity {
 		if (loadedCard == null) {
 			statusBox.append("ing3t 1nl43s7 k0r7 -_-\n");
 		} else {
-			statusBox.append(Util.writeCardToFile(loadedCard) ? "d0n3!\n"
+			statusBox.append(Util.writeCardToFile(loadedCard.getData(),loadedCard.getBalance()) ? "d0n3!\n"
 					: "Failed to write f1l3\n");
 		}
 		
 		update();
 	}
-
-	public void writeNfc(VsttrfkCard card) throws IOException {
+	public void writeNfc(RKFCard card) throws IOException {
+		
 		final byte[][] data = card.getData();
 		if(mfcDevice != null){
 			if (!mfcDevice.isConnected()) {
@@ -146,11 +152,11 @@ public class Vttrfkgit64Activity extends Activity {
 				}
 			}
 
-			final IVsttrfkAuthable writeAuth = new WriteAuth(mfcDevice);
+			final IRKFAuthable writeAuth = new WriteAuth(mfcDevice);
 			// first 4 blocks are manufacturer's read-only
 			for (int i = 4; i < data.length; i++) {
 				// every 4th block is a new sector... try to auth..
-				if (i % 4 == 0 && !writeAuth.authToSector(i / 4)) {
+				if (i % 4 == 0 && !writeAuth.authToSector(i / 4, loadedCard.getKeysB())) {
 					statusBox.append("Unable to auth to sect0r: " + i + ".\n");
 				}
 				if (i % 4 != 3) { // blcok 3 (fjärde blocket) håller i keys, vill ej skriva hit
@@ -195,7 +201,7 @@ public class Vttrfkgit64Activity extends Activity {
 				binDump += inputText;	
 			}
 			try {
-				loadedCard = new VsttrfkCard(binDump);
+				loadedCard = RKFCardFactory.createCard(binDump);
 	
 			} catch (FileNotFoundException e1) {
 				statusBox.append("FILE " + binDump + " NOT FOUND\n");
@@ -214,7 +220,7 @@ public class Vttrfkgit64Activity extends Activity {
 		update();
 	}
 
-	private static String getCardInfo(VsttrfkCard card){
+	private static String getCardInfo(RKFCard card){
 		byte[] id = card.getId();
 		String strId = "";
 		for(int i = 0 ; i < id.length; i++){
@@ -232,7 +238,7 @@ public class Vttrfkgit64Activity extends Activity {
 				mfcDevice.connect();
 			}
 			try {
-				loadedCard = new VsttrfkCard(mfcDevice);
+				loadedCard = RKFCardFactory.createCard(mfcDevice);
 
 			} catch (IOException e) {
 				statusBox.append("Fel vid läsning: \n" + e.getMessage());
