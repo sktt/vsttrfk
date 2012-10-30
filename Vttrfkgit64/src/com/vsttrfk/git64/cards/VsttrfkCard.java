@@ -22,6 +22,10 @@ public class VsttrfkCard extends AbstractRKFCard {
 		this.data = super.getData();
 	}
 	
+	public String getProvider(){
+		return "Vsttrfk";
+	}
+	
 	public boolean anonymousExploit() {
 		final int i = getBlock(BlockId.PURSE);
 		if (Util.toHexString(data[8][3]).charAt(1) == '8'

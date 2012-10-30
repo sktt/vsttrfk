@@ -9,4 +9,5 @@ public interface RKFCard {
 	public double getBalance();
 	public double getOldBalance();
 	public boolean anonymousExploit();
+	public String getProvider();
 }

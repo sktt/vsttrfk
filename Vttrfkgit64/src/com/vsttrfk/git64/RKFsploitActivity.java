@@ -22,10 +22,10 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.vsttrfk.git64.auth.IRKFAuthable;
-import com.vsttrfk.git64.auth.WriteAuth;
 import com.vsttrfk.git64.cards.RKFCard;
 import com.vsttrfk.git64.cards.RKFCardFactory;
+import com.vsttrfk.git64.tools.FileIO;
+import com.vsttrfk.git64.tools.MfcIO;
 import com.vsttrfk.git64.tools.Util;
 
 public class RKFsploitActivity extends Activity {
@@ -50,9 +50,6 @@ public class RKFsploitActivity extends Activity {
 		scroll = (ScrollView) findViewById(R.id.scrollView);
 		statusBox.setMovementMethod(new ScrollingMovementMethod());
 		printDumps(getDumpList());
-		
-		
-		
 		mAdapter = NfcAdapter.getDefaultAdapter(this);
 		pIntent = PendingIntent.getActivity(this, 0, 
 				new Intent(this, 
@@ -134,42 +131,11 @@ public class RKFsploitActivity extends Activity {
 		if (loadedCard == null) {
 			statusBox.append("ing3t 1nl43s7 k0r7 -_-\n");
 		} else {
-			statusBox.append(Util.writeCardToFile(loadedCard.getData(),loadedCard.getBalance()) ? "d0n3!\n"
+			statusBox.append(FileIO.getInstance().writeCardToFile(loadedCard.getData(),loadedCard.getBalance()) ? "d0n3!\n"
 					: "Failed to write f1l3\n");
 		}
 		
 		update();
-	}
-	public void writeNfc(RKFCard card) throws IOException {
-		
-		final byte[][] data = card.getData();
-		if(mfcDevice != null){
-			if (!mfcDevice.isConnected()) {
-				try{
-					mfcDevice.connect();
-				} catch(IllegalStateException e){
-					throw new TagLostException("lost connection");
-				}
-			}
-
-			final IRKFAuthable writeAuth = new WriteAuth(mfcDevice);
-			// first 4 blocks are manufacturer's read-only
-			for (int i = 4; i < data.length; i++) {
-				// every 4th block is a new sector... try to auth..
-				if (i % 4 == 0 && !writeAuth.authToSector(i / 4, loadedCard.getKeysB())) {
-					statusBox.append("Unable to auth to sect0r: " + i + ".\n");
-				}
-				if (i % 4 != 3) { // blcok 3 (fjärde blocket) håller i keys, vill ej skriva hit
-					try {
-						mfcDevice.writeBlock(i, data[i]);
-					} catch (IOException e) {
-						statusBox.append("Failed to write to block: " + i + " !! ");
-					}
-				}
-			}
-		} else {
-			statusBox.append("Inget kort att skriva på");
-		}
 	}
 
 	public void writeNfcAction(View view) {
@@ -178,7 +144,7 @@ public class RKFsploitActivity extends Activity {
 				loadedCard != null &&
 				Util.arrayEqual(mfcDevice.getTag().getId(), loadedCard.getId())){
 			try {
-				writeNfc(loadedCard);
+				MfcIO.getInstance().writeMfc(mfcDevice, loadedCard.getData(), loadedCard.getKeysB());
 			} catch (IOException e) {
 				statusBox.append("Error connecting\n");
 			}
@@ -209,8 +175,7 @@ public class RKFsploitActivity extends Activity {
 			} catch (IOException e2) {
 				statusBox.append("ERROR HANDLING FILE " + binDump + "\n");
 				return;
-			}
-			
+			}	
 			statusBox.append(getCardInfo(loadedCard)
 					+ "\nNu kan du skriva till nfc!\n");
 	
@@ -226,7 +191,7 @@ public class RKFsploitActivity extends Activity {
 		for(int i = 0 ; i < id.length; i++){
 			strId += Util.toHexString(id[i]);
 		}
-		return "\n1n14357 k0r7\n----------\nID: \t"+strId+"\nBalance: \t"+card.getBalance()
+		return "\n1n14357 k0r7\n----------\nID: \t"+strId+"\nProvider: \t"+card.getProvider()+"\nBalance: \t"+card.getBalance()
 				+"kr\nAnonymousReturn ger:"+card.getOldBalance()	+"kr\n";
 		
 	}
@@ -251,7 +216,7 @@ public class RKFsploitActivity extends Activity {
 				return;
 			}
 
-			writeNfc(loadedCard);
+			MfcIO.getInstance().writeMfc(mfcDevice, loadedCard.getData(), loadedCard.getKeysB());
 
 			statusBox.append("Saldo innan: " + saldo + "\n");
 

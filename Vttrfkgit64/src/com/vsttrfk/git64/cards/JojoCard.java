@@ -23,6 +23,9 @@ public class JojoCard extends AbstractRKFCard {
 		this.data = super.getData();
 	}
 
+	public String getProvider(){
+		return "Jojo";
+	}
 	
 	public boolean anonymousExploit() {
 		final int i = getBlock(BlockId.PURSE);
