@@ -23,6 +23,13 @@
         android:onClick="readNfcAction"
         android:text="@string/StepOneNfc" />
 
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/autoLoad"
+        android:onClick="autoLoadAction" />
+
     <GridLayout
         android:id="@+id/file"
         android:layout_width="match_parent"
@@ -43,7 +50,7 @@
             android:layout_gravity="fill_horizontal"
             android:ems="10"
             android:hint="@string/fileName"
-            android:inputType="textUri"
+            android:inputType="phone"
             android:nextFocusLeft="@id/filePath"
             android:nextFocusUp="@id/filePath" >
 

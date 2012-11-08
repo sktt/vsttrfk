@@ -24,6 +24,7 @@ public class RKFCardFactory {
 		if(mfc.authenticateSectorWithKeyA(0, IRKFAuthable.KEYS_A_JOJO[0])){
 			result = new JojoCard(MfcIO.getInstance().readMfc(mfc,IRKFAuthable.KEYS_A_JOJO));
 		}
+
 		return result;
 	}
 	public static RKFCard createCard(String path) throws FileNotFoundException, IOException{

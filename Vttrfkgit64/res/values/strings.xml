@@ -12,5 +12,6 @@
     <string name="fileName">Ange filnamn el. siffra: </string>
     <string name="anonExp">Returenera</string>
     <string name="credz">,.-+*^\'´AHc/Breach pr0d `\'^*+-.,</string>
-
+    <string name="autoLoad">Autoladda</string>
+    
 </resources>
