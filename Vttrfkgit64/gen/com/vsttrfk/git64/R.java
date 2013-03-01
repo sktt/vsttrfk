@@ -17,6 +17,8 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
+        public static final int GridLayout1=0x7f070015;
+        public static final int LinearLayout1=0x7f070012;
         public static final int LÄS=0x7f07000e;
         public static final int anonExploit=0x7f07000a;
         public static final int button1=0x7f070001;
@@ -27,10 +29,20 @@ public final class R {
         public static final int filePath=0x7f070005;
         public static final int listView1=0x7f070010;
         public static final int scrollView=0x7f07000b;
+        public static final int spinner1=0x7f070013;
+        public static final int spinner2=0x7f070014;
         public static final int statusBox=0x7f07000c;
+        public static final int textSwitcher1=0x7f07001c;
         public static final int textView1=0x7f070000;
         public static final int textView2=0x7f070006;
         public static final int textView3=0x7f07000d;
+        public static final int textView4=0x7f070018;
+        public static final int textView5=0x7f07001b;
+        public static final int textView6=0x7f070016;
+        public static final int textView7=0x7f070017;
+        public static final int textView8=0x7f070019;
+        public static final int textView9=0x7f07001a;
+        public static final int wrap=0x7f070011;
         public static final int write=0x7f070007;
         public static final int writeFile=0x7f070009;
         public static final int writeNfc=0x7f070008;
@@ -38,6 +50,7 @@ public final class R {
     public static final class layout {
         public static final int design2=0x7f030000;
         public static final int main=0x7f030001;
+        public static final int test=0x7f030002;
     }
     public static final class string {
         public static final int Läs=0x7f060005;

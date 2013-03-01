@@ -28,10 +28,10 @@ public class VsttrfkCard extends AbstractRKFCard {
 	
 	public boolean anonymousExploit() {
 		final int i = getBlock(BlockId.PURSE);
-		if (Util.toHexString(data[8][3]).charAt(1) == '8'
-				&& data[i + 1][0] > data[i + 2][0]) {
-			return false; // Card was already sploitet.
-		}
+//		if (Util.toHexString(data[8][3]).charAt(1) == '8'
+//				&& data[i + 1][0] > data[i + 2][0]) {
+//			return false; // Card was already sploitet.
+//		}
 
 		// switch places between the two balance blocks.
 		final byte[] temp = data[i + 1];
