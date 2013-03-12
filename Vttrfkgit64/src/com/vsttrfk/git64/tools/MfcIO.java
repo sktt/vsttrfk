@@ -3,8 +3,8 @@ package com.vsttrfk.git64.tools;
 import java.io.IOException;
 
 import com.vsttrfk.git64.auth.IRKFAuthable;
-import com.vsttrfk.git64.auth.ReadAuth;
-import com.vsttrfk.git64.auth.WriteAuth;
+import com.vsttrfk.git64.auth.AKeyAuth;
+import com.vsttrfk.git64.auth.BKeyAuth;
 
 import android.nfc.TagLostException;
 import android.nfc.tech.MifareClassic;
@@ -30,7 +30,7 @@ public class MfcIO {
 				throw new TagLostException("card was removed");
 			}
 		}
-		IRKFAuthable readAuth = new ReadAuth(mfc);
+		IRKFAuthable readAuth = new AKeyAuth(mfc);
 		for (int i = 0; i < data.length; i++) {
 
 			// every 4th block is a new sector... try to auth..
@@ -58,7 +58,7 @@ public class MfcIO {
 	}
 	
 	public static boolean writeMfc(MifareClassic mfc, int block, byte[] blockData, byte[][] keys) throws IOException{
-		final IRKFAuthable writeAuth = new WriteAuth(mfc);
+		final IRKFAuthable writeAuth = new BKeyAuth(mfc);
 		
 		// every 4th block is a new sector... try to auth..
 		if (block % 4 == 0 && !writeAuth.authToSector(block / 4, keys)) {

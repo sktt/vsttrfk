@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import android.nfc.tech.MifareClassic;
 
-public class WriteAuth extends AbstractAuther {
+public class BKeyAuth extends AbstractAuther {
 
 	private MifareClassic mfcDevice;
 
-	public WriteAuth(MifareClassic mfcDevice) {
+	public BKeyAuth(MifareClassic mfcDevice) {
 		this.mfcDevice = mfcDevice;
 	}
 
