@@ -18,11 +18,15 @@ public class RKFCardFactory {
 			mfc.connect();
 		}
 		RKFCard result = null;
-		if(mfc.authenticateSectorWithKeyA(0, IRKFAuthable.KEYS_A_VSTTRFK[0])){
+		// TODO: get a solution that makes sence. ie user input
+		if(mfc.authenticateSectorWithKeyA(3, IRKFAuthable.KEYS_A_VSTTRFK[1])){
 			result = new VsttrfkCard(MfcIO.getInstance().readMfc(mfc,IRKFAuthable.KEYS_A_VSTTRFK));
 		}
 		if(mfc.authenticateSectorWithKeyA(0, IRKFAuthable.KEYS_A_JOJO[0])){
 			result = new JojoCard(MfcIO.getInstance().readMfc(mfc,IRKFAuthable.KEYS_A_JOJO));
+		}
+		if(mfc.authenticateSectorWithKeyA(3, IRKFAuthable.KEYS_A_SL[0])){
+			result = new SLCard(MfcIO.getInstance().readMfc(mfc,IRKFAuthable.KEYS_A_SL));
 		}
 
 		return result;
@@ -31,13 +35,18 @@ public class RKFCardFactory {
 		RKFCard result = null;
 		final byte[][] data = readPath(path);
 		
-		// MUST HAEV BESSER WEG ZU DETERMAIN TIS. cant find proper tcci bits
-		if(data[1][10] == (byte)0x00){
+		// TODO: Better way to determine card provider here as well.
+		// ie user input or meta data from storage
+		if(data[1][2] == (byte)0x02){
 			result = new VsttrfkCard(data);
 		}
-		if(data[1][10] == (byte)0x04){
+		if(data[1][2] == (byte)0x03){
 			result = new JojoCard(data);
 		}
+		if(data[1][2] == (byte)0x44){
+			result = new SLCard(data);
+		}
+		
 		return result;
 	}
 	

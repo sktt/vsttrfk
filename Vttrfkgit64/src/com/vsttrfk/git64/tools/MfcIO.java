@@ -2,12 +2,13 @@ package com.vsttrfk.git64.tools;
 
 import java.io.IOException;
 
-import com.vsttrfk.git64.auth.IRKFAuthable;
-import com.vsttrfk.git64.auth.AKeyAuth;
-import com.vsttrfk.git64.auth.BKeyAuth;
-
 import android.nfc.TagLostException;
 import android.nfc.tech.MifareClassic;
+import android.util.Log;
+
+import com.vsttrfk.git64.auth.AKeyAuth;
+import com.vsttrfk.git64.auth.BKeyAuth;
+import com.vsttrfk.git64.auth.IRKFAuthable;
 
 public class MfcIO {
 	private static MfcIO instance;
@@ -43,18 +44,27 @@ public class MfcIO {
 		}
 		return data;
 	}
-	public boolean writeMfc(MifareClassic mfc, byte[][] data, byte[][] keys) throws IOException{
+	public int writeMfc(MifareClassic mfc, byte[][] data, byte[][] keys) throws IOException{
 	
 		if (!mfc.isConnected()) {
 			mfc.connect();
 		}
+		int errors = 0;
+		boolean success = false;
 		// first 4 blocks are manufacturer's read-only
 		for (int i = 4; i < data.length; i++) {
-			if(!writeMfc(mfc,i,data[i],keys)){
-				return false;
+			success = false;
+			try {
+				success = writeMfc(mfc,i,data[i],keys);
+			} catch(IOException e){
+				Log.w("VSTTRFK", e.getMessage());
+			} finally{
+				if(!success){
+					errors++;
+				}
 			}
 		}
-		return true;
+		return errors;
 	}
 	
 	public static boolean writeMfc(MifareClassic mfc, int block, byte[] blockData, byte[][] keys) throws IOException{
@@ -64,6 +74,7 @@ public class MfcIO {
 		if (block % 4 == 0 && !writeAuth.authToSector(block / 4, keys)) {
 			return false;
 		}
+		
 		if (block % 4 != 3) { // blcok 3 (fjärde blocket) håller i keys, vill ej skriva hit
 			mfc.writeBlock(block, blockData);
 		}

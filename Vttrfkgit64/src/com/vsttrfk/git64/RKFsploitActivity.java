@@ -33,22 +33,22 @@ public class RKFsploitActivity extends Activity {
 	private TextView statusBox;
 	private RKFCard loadedCard;
 	private EditText filePathEditText;
-	private ScrollView scroll;
 	private NfcAdapter mAdapter;
 	private IntentFilter[] filters;
 	private PendingIntent pIntent;
 
+	private ScrollView scroll ; 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.design2); // print some haxor ascii..
 											// *important*
 		statusBox = (TextView) findViewById(R.id.statusBox);
+		scroll = (ScrollView) findViewById(R.id.scrollView);
+		
 		statusBox.requestFocus();
 		filePathEditText = (EditText) findViewById(R.id.filePath);
-		scroll = (ScrollView) findViewById(R.id.scrollView);
 		statusBox.setMovementMethod(new ScrollingMovementMethod());
 		printDumps(getDumpList());
 		mAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -58,7 +58,8 @@ public class RKFsploitActivity extends Activity {
 				NfcAdapter.ACTION_TAG_DISCOVERED);
 		filters = new IntentFilter[] { tagDetected };
 
-		update();
+		updateUI();
+		
 	}
 
 	@Override
@@ -78,14 +79,11 @@ public class RKFsploitActivity extends Activity {
 		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
 			mfcDevice = MifareClassic.get((Tag) intent
 					.getParcelableExtra(NfcAdapter.EXTRA_TAG));
+			readNfc();
 		} else {
 			Log.e("ERROR",
 					"Unknown: " + intent + "\nAction: " + intent.getAction());
 		}
-	}
-
-	private void update() {
-		scroll.fullScroll(View.FOCUS_DOWN);
 	}
 
 	private List<String> getDumpList() {
@@ -110,7 +108,7 @@ public class RKFsploitActivity extends Activity {
 		}
 	}
 
-	public void readNfcAction(View view) {
+	public void readNfc(){
 		if (mfcDevice != null) {
 
 			statusBox.append("Läser k0rt...\n");
@@ -125,7 +123,8 @@ public class RKFsploitActivity extends Activity {
 		} else {
 			statusBox.append("yue put cardz on m3 first plx\n");
 		}
-		update();
+
+		updateUI();
 	}
 
 	public void writeFileAction(View view) {
@@ -137,27 +136,36 @@ public class RKFsploitActivity extends Activity {
 					: "Failed to write f1l3\n");
 		}
 
-		update();
+		
 	}
 
+	private void updateUI(){
+		scroll.post(new Runnable() { 
+            public void run() { 
+                scroll.smoothScrollTo(0, statusBox.getBottom());
+            } 
+        }); 
+		
+	}
 	public void writeNfcAction(View view) {
 		statusBox.append("commencing...\n");
 		if (mfcDevice != null
 				&& loadedCard != null
 				&& Util.arrayEqual(mfcDevice.getTag().getId(),
 						loadedCard.getId())) {
+			int errors = 0;
 			try {
-				MfcIO.getInstance().writeMfc(mfcDevice, loadedCard.getData(),
-						loadedCard.getKeysB());
+				errors = MfcIO.getInstance().writeMfc(mfcDevice, loadedCard.getData(),
+						loadedCard.getKeysB()); //mfcDevice, loadedCard
 			} catch (IOException e) {
 				statusBox.append("Error connecting\n");
 			}
-			statusBox.append("d0n3\n");
+			statusBox.append("wrote "+ (loadedCard.getData().length - errors) +"/"+loadedCard.getData().length+" blocks\n");
 		} else {
 			statusBox
 					.append("Either no card on reader, nothing to write, or id missmatch... :P\n");
 		}
-		update();
+		updateUI();
 	}
 
 	public void readFileAction(View view) {
@@ -187,7 +195,8 @@ public class RKFsploitActivity extends Activity {
 		} else {
 			statusBox.append("Ange filnamn.\n");
 		}
-		update();
+		updateUI();
+		
 	}
 
 	private static String getCardInfo(RKFCard card) {
@@ -235,7 +244,9 @@ public class RKFsploitActivity extends Activity {
 		} else {
 			statusBox.append("yue put cardz on m3 first plx\n");
 		}
-		update();
+
+		updateUI();
+		
 	}
 
 	public void autoLoadAction(View view) throws IOException, TagLostException {
@@ -318,13 +329,12 @@ public class RKFsploitActivity extends Activity {
 						statusBox
 								.append("Either no card on reader, nothing to write, or id missmatch... :P\n");
 					}
-					update();
+					
 
 				}
 			}
+			
 		}
-		
-
+		updateUI();
 	}
-
 }

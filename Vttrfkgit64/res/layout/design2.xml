@@ -16,20 +16,6 @@
         android:text="@string/Läs"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:onClick="readNfcAction"
-        android:text="@string/StepOneNfc" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/autoLoad"
-        android:onClick="autoLoadAction" />
-
     <GridLayout
         android:id="@+id/file"
         android:layout_width="match_parent"
@@ -54,7 +40,6 @@
             android:nextFocusLeft="@id/filePath"
             android:nextFocusUp="@id/filePath" >
 
-            <requestFocus />
         </AutoCompleteTextView>
     </GridLayout>
 
@@ -99,19 +84,19 @@
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_weight="0.18" >
+        android:layout_height="0dp"
+        android:layout_weight="0.18" 
+        >
 
         <TextView
             android:id="@+id/statusBox"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:focusableInTouchMode="true"
             android:text="@string/statusBox"
             android:textSize="@dimen/sSize"
             android:typeface="monospace" />
     </ScrollView>
-
     <TextView
         android:id="@+id/textView3"
         android:layout_width="match_parent"
