@@ -10,8 +10,6 @@ import com.vsttrfk.git64.tools.Util;
 
 public class VsttrfkCard extends AbstractRKFCard {
 
-	private final byte[][] data;
-
 	/**
 	 * Create card object from nfc-source
 	 * 
@@ -19,9 +17,12 @@ public class VsttrfkCard extends AbstractRKFCard {
 	 */
 	public VsttrfkCard(byte[][] data) throws TagLostException, IOException {
 		super(data);
-		this.data = super.getData();
 	}
 	
+	public VsttrfkCard() {
+		super();
+	}
+
 	public String getProvider(){
 		return "Vsttrfk";
 	}

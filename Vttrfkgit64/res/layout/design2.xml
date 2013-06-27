@@ -16,32 +16,14 @@
         android:text="@string/Läs"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <GridLayout
-        android:id="@+id/file"
-        android:layout_width="match_parent"
+    <EditText
+        android:id="@+id/filePath"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:columnCount="2"
-        android:orientation="horizontal"
-        android:rowCount="1" >
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="85dp"
-            android:layout_gravity="left"
-            android:onClick="readFileAction"
-            android:text="@string/StepOneFil" />
-
-        <AutoCompleteTextView
-            android:id="@+id/filePath"
-            android:layout_gravity="fill_horizontal"
-            android:ems="10"
-            android:hint="@string/fileName"
-            android:inputType="phone"
-            android:nextFocusLeft="@id/filePath"
-            android:nextFocusUp="@id/filePath" >
-
-        </AutoCompleteTextView>
-    </GridLayout>
+        android:layout_gravity="fill_horizontal"
+        android:hint="@string/fileName"
+        android:inputType="number"
+        android:selectAllOnFocus="true"/>
 
     <TextView
         android:id="@+id/textView2"
@@ -59,7 +41,7 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/writeNfc"
+            android:id="@+id/btn_write_nfc"
             android:layout_width="124dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|fill_horizontal"
@@ -67,14 +49,14 @@
             android:text="@string/StepTwoNfc" />
 
         <Button
-            android:id="@+id/writeFile"
+            android:id="@+id/btn_write_file"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="writeFileAction"
             android:text="@string/StepTwoFil" />
 
         <Button
-            android:id="@+id/anonExploit"
+            android:id="@+id/btn_anon_expl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="anonymousExploitAction"
@@ -85,8 +67,7 @@
         android:id="@+id/scrollView"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.18" 
-        >
+        android:layout_weight="0.18" >
 
         <TextView
             android:id="@+id/statusBox"
@@ -97,6 +78,7 @@
             android:textSize="@dimen/sSize"
             android:typeface="monospace" />
     </ScrollView>
+
     <TextView
         android:id="@+id/textView3"
         android:layout_width="match_parent"

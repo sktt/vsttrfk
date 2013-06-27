@@ -1,4 +1,4 @@
-package com.vsttrfk.git64.cards;
+package com.vsttrfk.git64;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,28 +8,37 @@ import android.nfc.tech.MifareClassic;
 import android.util.Log;
 
 import com.vsttrfk.git64.auth.IRKFAuthable;
+import com.vsttrfk.git64.cards.JojoCard;
+import com.vsttrfk.git64.cards.RKFCard;
+import com.vsttrfk.git64.cards.SLCard;
+import com.vsttrfk.git64.cards.VsttrfkCard;
+import com.vsttrfk.git64.tools.CallbackHandler;
 import com.vsttrfk.git64.tools.FileIO;
 import com.vsttrfk.git64.tools.MfcIO;
 
 public class RKFCardFactory {
 
-	public static RKFCard createCard(MifareClassic mfc) throws IOException{
+	public static void createCard(MifareClassic mfc, CallbackHandler callback) throws IOException{
 		if(!mfc.isConnected()){
 			mfc.connect();
 		}
 		RKFCard result = null;
+		byte[][] keys = null;
 		// TODO: get a solution that makes sence. ie user input
 		if(mfc.authenticateSectorWithKeyA(3, IRKFAuthable.KEYS_A_VSTTRFK[1])){
-			result = new VsttrfkCard(MfcIO.getInstance().readMfc(mfc,IRKFAuthable.KEYS_A_VSTTRFK));
+			result = new VsttrfkCard();
+			keys = IRKFAuthable.KEYS_A_VSTTRFK;
 		}
 		if(mfc.authenticateSectorWithKeyA(0, IRKFAuthable.KEYS_A_JOJO[0])){
-			result = new JojoCard(MfcIO.getInstance().readMfc(mfc,IRKFAuthable.KEYS_A_JOJO));
+			result = new JojoCard();
+			keys = IRKFAuthable.KEYS_A_JOJO;
 		}
 		if(mfc.authenticateSectorWithKeyA(3, IRKFAuthable.KEYS_A_SL[0])){
-			result = new SLCard(MfcIO.getInstance().readMfc(mfc,IRKFAuthable.KEYS_A_SL));
+			result = new SLCard();
+			keys = IRKFAuthable.KEYS_A_SL;
 		}
+		MfcIO.getInstance().readMfcAsync(mfc, keys, result, callback);
 
-		return result;
 	}
 	public static RKFCard createCard(String path) throws FileNotFoundException, IOException{
 		RKFCard result = null;
@@ -64,4 +73,5 @@ public class RKFCardFactory {
 		}
 		return data;
 	}
+	
 }

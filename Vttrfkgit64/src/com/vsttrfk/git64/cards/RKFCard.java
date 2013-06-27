@@ -3,6 +3,7 @@ package com.vsttrfk.git64.cards;
 public interface RKFCard {
 
 	public byte[][] getData();
+	public void setData(byte[][] data);
 	public byte[] getId();
 	public byte[][] getKeysA();
 	public byte[][] getKeysB();

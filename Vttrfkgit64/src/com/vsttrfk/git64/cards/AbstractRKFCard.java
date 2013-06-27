@@ -7,8 +7,12 @@ import com.vsttrfk.git64.tools.Util;
 
 public abstract class AbstractRKFCard implements RKFCard {
 
-	private final byte[][] data;
+	protected byte[][] data;
 
+	public AbstractRKFCard(){
+		// Empty constructor
+	}
+	
 	public AbstractRKFCard(byte[][] data) throws IOException {
 		this.data = data;
 	}
@@ -17,6 +21,9 @@ public abstract class AbstractRKFCard implements RKFCard {
 		return data;
 	}
 
+	public void setData(byte[][] data){
+		this.data = data;
+	}
 	public byte[] getId() {
 		byte[] result = new byte[4];
 

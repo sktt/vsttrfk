@@ -11,7 +11,6 @@ import com.vsttrfk.git64.tools.Util;
 public class JojoCard extends AbstractRKFCard {
 
 
-	private byte[][] data;
 	
 	/**
 	 * Create card object from nfc-source
@@ -20,7 +19,10 @@ public class JojoCard extends AbstractRKFCard {
 	 */
 	public JojoCard(byte[][] data) throws TagLostException, IOException {
 		super(data);
-		this.data = super.getData();
+	}
+
+	public JojoCard() {
+		super();
 	}
 
 	public String getProvider(){

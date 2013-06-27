@@ -12,6 +12,10 @@ public class SLCard extends AbstractRKFCard {
 		super(data);
 	}
 
+	public SLCard() {
+		super();
+	}
+
 	public byte[][] getKeysA() {
 		return IRKFAuthable.KEYS_A_SL;
 	}
