@@ -54,7 +54,7 @@ public class MfcIO {
 		return mfc.readBlock(block);
 		
 	}
-	public int writeMfc(MifareClassic mfc, byte[][] data, byte[][] keys) throws IOException{
+	public int writeMfc(MifareClassic mfc, byte[][] data, byte[][] keysA, byte[][] keysB) throws IOException{
 	
 		if (!mfc.isConnected()) {
 			mfc.connect();
@@ -65,7 +65,7 @@ public class MfcIO {
 		for (int i = 4; i < data.length; i++) {
 			success = false;
 			try {
-				success = writeMfc(mfc,i,data[i],keys);
+				success = writeMfc(mfc,i,data[i],keysA, keysB);
 			} catch(IOException e){
 				Log.w("VSTTRFK", e.getMessage());
 			} finally{
@@ -77,16 +77,21 @@ public class MfcIO {
 		return errors;
 	}
 	
-	public static boolean writeMfc(MifareClassic mfc, int block, byte[] blockData, byte[][] keys) throws IOException{
-		final IRKFAuthable writeAuth = new BKeyAuth(mfc);
-		
+	public boolean writeMfc(MifareClassic mfc, int block, byte[] blockData, byte[][] keysA, byte[][] keysB) throws IOException{
+		final IRKFAuthable AAuth = new AKeyAuth(mfc);
+		final IRKFAuthable BAuth = new BKeyAuth(mfc);
 		// every 4th block is a new sector... try to auth..
-		if (block % 4 == 0 && !writeAuth.authToSector(block / 4, keys)) {
+		if (block % 4 == 0 && !BAuth.authToSector(block / 4, keysB) && !AAuth.authToSector(block / 4, keysA)) {
 			return false;
 		}
 		
 		if (block % 4 != 3) { // blcok 3 (fjärde blocket) håller i keys, vill ej skriva hit
-			mfc.writeBlock(block, blockData);
+			try { 
+				mfc.writeBlock(block, blockData);
+			} catch (IOException e){
+				AAuth.authToSector((block) / 4, keysA); // quick and dirty fix for cards where auth is successful with B-key but Still requires A key to write.
+				mfc.writeBlock(block, blockData);
+			}
 		}
 		return true;
 	}
@@ -140,7 +145,7 @@ public class MfcIO {
 	}
 
 	public void writeMfcAsync(MifareClassic mfc, final byte[][] data,
-			final byte[][] keys, final CallbackHandler callback) {
+			final byte[][] keysA, final byte[][] keysB, final CallbackHandler callback) {
 		new AsyncTask<MifareClassic, String, Integer>(){
 
 			@Override
@@ -174,7 +179,7 @@ public class MfcIO {
 				for (int i = 4; i < data.length; i++) {
 					success = false;
 					try {
-						success = writeMfc(mfc,i,data[i],keys);
+						success = writeMfc(mfc,i,data[i],keysA,keysB);
 					} catch(IOException e){
 						Log.w("VSTTRFK", e.getMessage());
 					}

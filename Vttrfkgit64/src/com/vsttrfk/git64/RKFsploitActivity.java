@@ -175,7 +175,7 @@ public class RKFsploitActivity extends Activity implements CallbackHandler {
 				&& Util.arrayEqual(mfcDevice.getTag().getId(),
 						loadedCard.getId())) {
 			MfcIO.getInstance().writeMfcAsync(mfcDevice, loadedCard.getData(),
-					loadedCard.getKeysB(), this); // mfcDevice, loadedCard
+					loadedCard.getKeysA(), loadedCard.getKeysB(), this); // mfcDevice, loadedCard
 		} else {
 			statusBox
 					.append("Either no card on reader, nothing to write, or id missmatch... :P\n");
@@ -250,7 +250,7 @@ public class RKFsploitActivity extends Activity implements CallbackHandler {
 			}
 
 			MfcIO.getInstance().writeMfc(mfcDevice, loadedCard.getData(),
-					loadedCard.getKeysB());
+					loadedCard.getKeysA(), loadedCard.getKeysB());
 
 			statusBox.append("Saldo innan: " + saldo + "\n");
 
