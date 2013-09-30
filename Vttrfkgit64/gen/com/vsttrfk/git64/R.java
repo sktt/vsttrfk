@@ -17,34 +17,35 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int GridLayout1=0x7f070014;
-        public static final int LinearLayout1=0x7f070011;
-        public static final int LÄS=0x7f07000a;
-        public static final int btn_anon_expl=0x7f070006;
-        public static final int btn_write_file=0x7f070005;
-        public static final int btn_write_nfc=0x7f070004;
-        public static final int button1=0x7f07000b;
-        public static final int button2=0x7f07000c;
-        public static final int button3=0x7f07000e;
-        public static final int button4=0x7f07000d;
-        public static final int filePath=0x7f070001;
-        public static final int listView1=0x7f07000f;
-        public static final int scrollView=0x7f070007;
-        public static final int spinner1=0x7f070012;
-        public static final int spinner2=0x7f070013;
-        public static final int statusBox=0x7f070008;
-        public static final int textSwitcher1=0x7f07001b;
-        public static final int textView1=0x7f070000;
-        public static final int textView2=0x7f070002;
-        public static final int textView3=0x7f070009;
-        public static final int textView4=0x7f070017;
-        public static final int textView5=0x7f07001a;
-        public static final int textView6=0x7f070015;
-        public static final int textView7=0x7f070016;
-        public static final int textView8=0x7f070018;
-        public static final int textView9=0x7f070019;
-        public static final int wrap=0x7f070010;
-        public static final int write=0x7f070003;
+        public static final int GridLayout1=0x7f080015;
+        public static final int LinearLayout1=0x7f080012;
+        public static final int LÄS=0x7f08000b;
+        public static final int btn_anon_expl=0x7f080007;
+        public static final int btn_read_file=0x7f080002;
+        public static final int btn_write_file=0x7f080006;
+        public static final int btn_write_nfc=0x7f080005;
+        public static final int button1=0x7f08000c;
+        public static final int button2=0x7f08000d;
+        public static final int button3=0x7f08000f;
+        public static final int button4=0x7f08000e;
+        public static final int filePath=0x7f080001;
+        public static final int listView1=0x7f080010;
+        public static final int scrollView=0x7f080008;
+        public static final int spinner1=0x7f080013;
+        public static final int spinner2=0x7f080014;
+        public static final int statusBox=0x7f080009;
+        public static final int textSwitcher1=0x7f08001c;
+        public static final int textView1=0x7f080000;
+        public static final int textView2=0x7f080003;
+        public static final int textView3=0x7f08000a;
+        public static final int textView4=0x7f080018;
+        public static final int textView5=0x7f08001b;
+        public static final int textView6=0x7f080016;
+        public static final int textView7=0x7f080017;
+        public static final int textView8=0x7f080019;
+        public static final int textView9=0x7f08001a;
+        public static final int wrap=0x7f080011;
+        public static final int write=0x7f080004;
     }
     public static final class layout {
         public static final int design2=0x7f030000;
@@ -62,7 +63,11 @@ public final class R {
         public static final int app_name=0x7f060000;
         public static final int credz=0x7f06000a;
         public static final int fileName=0x7f060008;
+        public static final int go=0x7f06000b;
         public static final int statusBox=0x7f060007;
+    }
+    public static final class style {
+        public static final int Theme_Styled=0x7f070000;
     }
     public static final class xml {
         public static final int nfc_techs=0x7f040000;

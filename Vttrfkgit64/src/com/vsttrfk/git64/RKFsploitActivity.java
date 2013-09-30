@@ -43,7 +43,7 @@ public class RKFsploitActivity extends Activity implements CallbackHandler {
 	private Button btnWriteNfc;
 	private Button btnWriteFile;
 	private Button btnAnonExpl;
-
+	private Button btnReadFile;
 	private ScrollView scroll;
 
 	/** Called when the activity is first created. */
@@ -67,6 +67,7 @@ public class RKFsploitActivity extends Activity implements CallbackHandler {
 		statusBox = (TextView) findViewById(R.id.statusBox);
 		scroll = (ScrollView) findViewById(R.id.scrollView);
 		filePathEditText = (EditText) findViewById(R.id.filePath);
+		btnReadFile = (Button) findViewById(R.id.btn_read_file);
 		btnWriteNfc = (Button) findViewById(R.id.btn_write_nfc);
 		btnWriteFile = (Button) findViewById(R.id.btn_write_file);
 		btnAnonExpl = (Button) findViewById(R.id.btn_anon_expl);
@@ -167,7 +168,10 @@ public class RKFsploitActivity extends Activity implements CallbackHandler {
 		});
 
 	}
-
+	public void readFileAction(View view) {
+		readFile();
+	} 
+	
 	public void writeNfcAction(View view) {
 		statusBox.append("commencing");
 		if (mfcDevice != null
@@ -286,5 +290,7 @@ public class RKFsploitActivity extends Activity implements CallbackHandler {
 		btnWriteNfc.setEnabled(val);
 		btnWriteFile.setEnabled(val);
 		btnAnonExpl.setEnabled(val);
+		filePathEditText.setEnabled(val);
+		btnReadFile.setEnabled(val);
 	}
 }

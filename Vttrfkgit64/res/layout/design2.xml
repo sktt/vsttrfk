@@ -16,14 +16,30 @@
         android:text="@string/Läs"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <EditText
-        android:id="@+id/filePath"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="fill_horizontal"
-        android:hint="@string/fileName"
-        android:inputType="number"
-        android:selectAllOnFocus="true"/>
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/filePath"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:hint="@string/fileName"
+            android:inputType="number"
+            android:selectAllOnFocus="true" />
+
+        <Button
+            android:id="@+id/btn_read_file"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:onClick="readFileAction"
+            android:text="@string/go" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textView2"
