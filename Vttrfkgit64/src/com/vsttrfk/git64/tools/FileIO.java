@@ -41,12 +41,8 @@ public class FileIO {
 
 		return baos.toByteArray();
 	}
-	public boolean writeCardToFile(byte[][] cardData, double cardBalance) {
+	public boolean writeCardToFile(byte[][] cardData, String fileName) {
 		final byte[] data = Util.matrixToArray(cardData);
-		String uid = "";
-		for (int i = 0; i < 2; i++) { // 5 is full id.
-			uid += Util.toHexString(data[i]).toUpperCase();
-		}
 		
 		int copy = 0;
 		File outputFile = new File(".");
@@ -54,8 +50,9 @@ public class FileIO {
 		outputFile = new File(Environment
 				.getExternalStorageDirectory().getAbsolutePath()
 				+ "/"
-				+ uid
-				+ "-"+(int)cardBalance+"kr"+(copy != 0 ? "-"+copy : "")+ ".mfd");
+				+ fileName 
+				+ (copy != 0 ? "-"+copy : "")+ ".mfd"); 
+				// if dupe, filename is appended "-1"
 		copy++;
 		} while (outputFile.exists());
 		try {

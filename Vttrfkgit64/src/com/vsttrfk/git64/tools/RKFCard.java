@@ -1,4 +1,4 @@
-package com.vsttrfk.git64.cards;
+package com.vsttrfk.git64.tools;
 
 public interface RKFCard {
 

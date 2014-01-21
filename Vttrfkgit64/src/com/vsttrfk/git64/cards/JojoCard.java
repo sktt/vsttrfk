@@ -4,12 +4,26 @@ import java.io.IOException;
 
 import android.nfc.TagLostException;
 
-import com.vsttrfk.git64.auth.IRKFAuthable;
 import com.vsttrfk.git64.tools.BlockId;
 import com.vsttrfk.git64.tools.Util;
 
 public class JojoCard extends AbstractRKFCard {
 
+
+	public static final byte[][] KEYS_A_JOJO = {
+			{ (byte) 0x43, (byte) 0x4f, (byte) 0x4d, (byte) 0x4d, (byte) 0x4f,
+					(byte) 0x41 },
+			{ (byte) 0x47, (byte) 0x52, (byte) 0x4f, (byte) 0x55, (byte) 0x50,
+					(byte) 0x41 },
+			{ (byte) 0x50, (byte) 0x52, (byte) 0x49, (byte) 0x56, (byte) 0x54,
+					(byte) 0x41 } };
+	public static final byte[][] KEYS_B_JOJO = {
+			{ (byte) 0x43, (byte) 0x4f, (byte) 0x4d, (byte) 0x4d, (byte) 0x4f,
+					(byte) 0x42 },
+			{ (byte) 0x47, (byte) 0x52, (byte) 0x4f, (byte) 0x55, (byte) 0x50,
+					(byte) 0x42 },
+			{ (byte) 0x50, (byte) 0x52, (byte) 0x49, (byte) 0x56, (byte) 0x54,
+					(byte) 0x42 } };
 
 	
 	/**
@@ -58,12 +72,12 @@ public class JojoCard extends AbstractRKFCard {
 
 
 	public byte[][] getKeysA() {
-		return IRKFAuthable.KEYS_A_JOJO;
+		return KEYS_A_JOJO;
 	}
 
 
 	public byte[][] getKeysB() {
-		return IRKFAuthable.KEYS_B_JOJO;
+		return KEYS_B_JOJO;
 	}
 	
 

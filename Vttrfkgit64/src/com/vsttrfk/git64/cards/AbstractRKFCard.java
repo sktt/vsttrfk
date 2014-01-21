@@ -3,6 +3,7 @@ package com.vsttrfk.git64.cards;
 import java.io.IOException;
 
 import com.vsttrfk.git64.tools.BlockId;
+import com.vsttrfk.git64.tools.RKFCard;
 import com.vsttrfk.git64.tools.Util;
 
 public abstract class AbstractRKFCard implements RKFCard {

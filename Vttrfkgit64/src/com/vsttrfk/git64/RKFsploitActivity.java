@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -25,13 +26,13 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.vsttrfk.git64.cards.RKFCard;
 import com.vsttrfk.git64.tools.CallbackHandler;
 import com.vsttrfk.git64.tools.FileIO;
 import com.vsttrfk.git64.tools.MfcIO;
+import com.vsttrfk.git64.tools.RKFCard;
 import com.vsttrfk.git64.tools.Util;
 
-public class RKFsploitActivity extends Activity implements CallbackHandler {
+public class RKFsploitActivity extends Activity implements CallbackHandler<RKFCard> {
 	private MifareClassic mfcDevice;
 	private TextView statusBox;
 	private RKFCard loadedCard;
@@ -80,7 +81,6 @@ public class RKFsploitActivity extends Activity implements CallbackHandler {
 				return false;
 			}
 		});
-
 		statusBox.requestFocus();
 		statusBox.setMovementMethod(new ScrollingMovementMethod());
 		printDumps(getDumpList());
@@ -153,10 +153,20 @@ public class RKFsploitActivity extends Activity implements CallbackHandler {
 		if (loadedCard == null) {
 			statusBox.append("ing3t 1nl43s7 k0r7 -_-\n");
 		} else {
+			String uid = "";
+			final byte[] id = loadedCard.getId();
+			for (int i = 0; i < 2; i++) { // 5 is full id.
+				uid += Util.toHexString(id[i]).toUpperCase(Locale.ROOT);
+			}
+			final String fileName = loadedCard.getProvider() + "-" 
+		       + uid + "-" 
+		       + loadedCard.getBalance();
 			statusBox.append(FileIO.getInstance().writeCardToFile(
-					loadedCard.getData(), loadedCard.getBalance()) ? "d0n3!\n"
+					loadedCard.getData(), fileName) ? "d0n3!\n"
 					: "Failed to write f1l3\n");
+			printDumps(this.getDumpList());
 		}
+		updateUI();
 
 	}
 
@@ -281,7 +291,7 @@ public class RKFsploitActivity extends Activity implements CallbackHandler {
 		});
 	}
 
-	public void readComplete(RKFCard card) {
+	public void handleResult(RKFCard card) {
 		this.loadedCard = card;
 		updateStatus(getCardInfo(card));
 	}
@@ -293,4 +303,5 @@ public class RKFsploitActivity extends Activity implements CallbackHandler {
 		filePathEditText.setEnabled(val);
 		btnReadFile.setEnabled(val);
 	}
+
 }

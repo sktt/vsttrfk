@@ -1,12 +1,9 @@
 package com.vsttrfk.git64.tools;
 
-import com.vsttrfk.git64.cards.RKFCard;
-
-
-public interface CallbackHandler {
+public interface CallbackHandler<T> {
 
 	public void updateStatus(String status);
-	public void readComplete(RKFCard card);
+	public void handleResult(T result);
 	public void enableGUI(boolean val);
 	
 }

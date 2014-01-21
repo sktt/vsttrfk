@@ -9,7 +9,6 @@ import android.util.Log;
 import com.vsttrfk.git64.auth.AKeyAuth;
 import com.vsttrfk.git64.auth.BKeyAuth;
 import com.vsttrfk.git64.auth.IRKFAuthable;
-import com.vsttrfk.git64.cards.RKFCard;
 
 public class MfcIO {
 	private static MfcIO instance;
@@ -23,7 +22,7 @@ public class MfcIO {
 		return instance;
 	}
 
-	public byte[][] readMfc(MifareClassic mfc, byte[][] keys, CallbackHandler callback){
+	public byte[][] readMfc(MifareClassic mfc, byte[][] keys, CallbackHandler<?> callback){
 		byte[][] data = new byte[64][16];
 		if (!mfc.isConnected()) {
 			try{
@@ -41,7 +40,7 @@ public class MfcIO {
 		}
 		return data;
 	}
-	private byte[] readMfc(MifareClassic mfc, int block, byte[][] keys, CallbackHandler callback) throws IOException{
+	private byte[] readMfc(MifareClassic mfc, int block, byte[][] keys, CallbackHandler<?> callback) throws IOException{
 		IRKFAuthable readAuth = new AKeyAuth(mfc);
 
 		String readStatus = "";
@@ -98,8 +97,9 @@ public class MfcIO {
 	
 	
 
-	public void readMfcAsync(MifareClassic mfc, final byte[][] keys, final RKFCard result,
-			final CallbackHandler callback) {
+	public void readMfcAsync(MifareClassic mfc, final RKFCard result,
+			final CallbackHandler<RKFCard> callback) {
+		final byte[][] keys = result.getKeysA();
 		new AsyncTask<MifareClassic, String, RKFCard>() {
 
 			@Override
@@ -112,7 +112,7 @@ public class MfcIO {
 				super.onPostExecute(result);
 				callback.enableGUI(true);
 				callback.updateStatus("Done...\n");
-				callback.readComplete(result);
+				callback.handleResult(result);
 			}
 			
 			@Override
@@ -145,7 +145,7 @@ public class MfcIO {
 	}
 
 	public void writeMfcAsync(MifareClassic mfc, final byte[][] data,
-			final byte[][] keysA, final byte[][] keysB, final CallbackHandler callback) {
+			final byte[][] keysA, final byte[][] keysB, final CallbackHandler<?> callback) {
 		new AsyncTask<MifareClassic, String, Integer>(){
 
 			@Override
